@@ -1,0 +1,43 @@
+<html>
+  <head>
+    <title>Таблица посещаемости</title>
+    <meta content="">
+    <style></style>
+  </head>
+  <body>
+  <H1>Таблица посещаемости</H1>
+  <TABLE BORDER WIDTH="100%">
+  {% if attend_list %}
+    <ul>
+    <TR>
+      <TH>Дата</TH>
+      <TH>День недели</TH>
+      <TH>Звонки</TH>
+      <TH>Посещения</TH>
+      <TH>Заказы</TH>
+      <TH>Стоимость</TH>
+    </TR>
+    {% for attend in attend_list %}
+        <TR bgcolor={{attend.day_color}}>
+	  <TD>{{ attend.date_dd_mm_yy}}</TD>
+	  <TD>{{ attend.week_day}}</TD>
+	  <TD>{{ attend.calls }}</TD>
+	  <TD>{{ attend.visits }}</TD>
+	  <TD>{{ attend.order_count}}</TD>
+	  <TD>{{ attend.orders_price}}</TD>
+        </TR>
+    {% endfor %}
+    <TR>
+      <TD COLSPAN=2>ИТОГО:</TD>
+      <TD>{{sum_calls}}</TD>
+      <TD>{{sum_visits}}</TD>
+      <TD>{{sum_orders}}</TD>
+      <TD>{{sum_price}}</TD>
+     </TR>
+    </ul>
+  {% else %}
+    <p>Список изделий пуст</p>
+  {% endif %}
+  </TABLE>
+  </body>
+</html>
