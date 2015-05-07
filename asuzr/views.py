@@ -4,6 +4,7 @@ from django.template import Context, loader
 from asuzr.models import Product
 from asuzr.models import Attendance
 from asuzr.models import Order
+from asuzr.models import OrderPlan
 from datetime import datetime, date, time
 # Create your views here.
 
@@ -56,7 +57,7 @@ def get_filtered_list(p_list, year, month):
   filtered_list=[]
   for a in p_list:
     a_date = a.date
-    if a_date.strftime('%m/%Y') == month+'/'+year:
+    if a_date.strftime('%m/%Y').lstrip('0') == '/'.join((month,year)).lstrip('0'):
       filtered_list.append(a)
       
   return filtered_list
@@ -72,13 +73,16 @@ def attend_order_table(request, year, month):
   order_list = Order.objects.all().order_by('id')
   filtered_order_list  = get_filtered_list(order_list, year, month)
   
+  plan = OrderPlan.objects.all()
+  filtered_plan = get_filtered_list(plan, year, month)
+  
   sum_calls = sum(l.calls for l in filtered_attend_list)
   sum_visits = sum(l.visits for l in filtered_attend_list)
   sum_orders = sum(l.order_count for l in filtered_attend_list)
   sum_price = sum(l.orders_price for l in filtered_attend_list)
   
   sum_order_price = sum(l.price for l in filtered_order_list)
-    
+   
   t = loader.get_template('asuzr/attend_order.html')
   c = Context({
     'attend_list': filtered_attend_list,
@@ -88,9 +92,44 @@ def attend_order_table(request, year, month):
     'sum_orders': sum_orders,
     'sum_price': sum_price,
     'sum_order_price': sum_order_price,
+    'plan': filtered_plan[0],  
     })
   return HttpResponse(t.render(c))
+
+def main(request, day, month, year):
+  attend_list = Attendance.objects.all().order_by('date')
+  filtered_attend_list=get_filtered_list(attend_list, year, month)
   
+  p_date = datetime.strptime(day+'/'+month+'/'+year, '%d/%m/%Y')
+  order_list = Order.objects.filter(date=p_date).order_by('id')
+  
+  plan = OrderPlan.objects.all()
+  filtered_plan = get_filtered_list(plan, year, month)
+  
+  sum_calls = sum(l.calls for l in filtered_attend_list)
+  sum_visits = sum(l.visits for l in filtered_attend_list)
+  sum_orders = sum(l.order_count for l in filtered_attend_list)
+  sum_price = sum(l.orders_price for l in filtered_attend_list)
+  
+  sum_order_price = sum(l.price for l in order_list)
+  plan_balance = filtered_plan[0].plan-sum_price
+  
+  d_date = p_date.strftime("%d/%m/%Y")
+    
+  t = loader.get_template('asuzr/attend_order.html')
+  c = Context({
+    'attend_list': filtered_attend_list,
+    'order_list': order_list,
+    'sum_calls': sum_calls,
+    'sum_visits': sum_visits,
+    'sum_orders': sum_orders,
+    'sum_price': sum_price,
+    'sum_order_price': sum_order_price,
+    'plan': filtered_plan[0],
+    'balance': plan_balance,
+    'd_date': d_date,
+    })
+  return HttpResponse(t.render(c))
   
 
 

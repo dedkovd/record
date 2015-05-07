@@ -23,7 +23,11 @@ class Attendance(models.Model):
   
   @property
   def date_dd_mm_yy(self):
-    return self.date.strftime("%d/%m/%y")
+    return self.date.strftime("%d/%m/%Y")
+  
+  @property
+  def date_as_tuple(self):
+    return tuple(self.date_dd_mm_yy().split("/"))
   
   @property
   def week_day(self):
@@ -69,13 +73,12 @@ class Order(models.Model):
   
   @property
   def deadline_dmy(self):
-    return self.deadline.strftime("%d/%m/%y")
+    return self.deadline.strftime("%d/%m/%Y")
   
 #Эскизы
 class Sketch(models.Model):
-  file_name = models.CharField(max_length=150)	#имя файла
-  file_path = models.CharField(max_length=150)	#путь к файу
-  order = models.ForeignKey(Order)		#id заказа
+  sketch_file = models.FileField(upload_to = 'sketches')	#путь к файу
+  order = models.ForeignKey(Order)	#id заказа
 
 #Действия
 class Action(models.Model):
@@ -97,5 +100,5 @@ class AccessProtocol(models.Model):
   
 #План заказов
 class OrderPlan(models.Model):
-  month = models.DateField()
+  date = models.DateField()
   plan = models.IntegerField()
