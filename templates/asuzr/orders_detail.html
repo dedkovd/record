@@ -1,0 +1,41 @@
+<html>
+  <head>
+    <title>Заказы</title>
+    <meta content="">
+    <style></style>
+  </head>
+  <body>
+  <H1>Заказы на {{ d_date }} </H1>
+  <TABLE BORDER WIDTH="100%">
+  {% if order_list %}
+    <ul>
+    <TR>
+      <TH>Наименование</TH>
+      <TH>Стоимость</TH>
+      <TH>Адрес</TH>
+      <TH>Дизайнер</TH>
+      <TH>Срок сдачи</TH>
+    </TR>
+    {% for order in order_list %}
+        <TR>
+	  <TD>{{ order.product.name }}</TD>
+	  <TD>{{ order.price }}</TD>
+	  <TD>{{ order.address }}</TD>
+	  <TD>{{ order.designer.first_name }}</TD>
+	  <TD>{{ order.deadline_dmy }}</TD>
+        </TR>
+    {% endfor %}
+    <TR>
+      <TD> ИТОГО:</TD>
+      <TD>{{sum_price}}</TD>
+      <TD></TD>
+      <TD></TD>
+      <TD></TD>
+     </TR>
+    </ul>
+  {% else %}
+    <p> Список заказов пуст</p>
+  {% endif %}
+  </TABLE>
+  </body>
+</html>

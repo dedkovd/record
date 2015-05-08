@@ -1,41 +1,50 @@
 <html>
   <head>
-    <title>Заказы</title>
+    <title></title>
     <meta content="">
     <style></style>
   </head>
   <body>
-  <H1>Заказы на {{ d_date }} </H1>
+  <H1>Таблица выхода заказов</H1>
   <TABLE BORDER WIDTH="100%">
   {% if order_list %}
-    <ul>
+   <ul>
     <TR>
-      <TH>Наименование</TH>
-      <TH>Стоимость</TH>
-      <TH>Адрес</TH>
-      <TH>Дизайнер</TH>
+      <TH>Дата</TH>
       <TH>Срок сдачи</TH>
+      <TH>Наименование</TH>
+      <TH>Доставка</TH>
+      <TH>Подьем</TH>
+      <TH>Адрес</TH>
+      <TH>Стоимость</TH>
+      <TH>Оплачено</TH>
+      <TH>Остаток</TH>
+      <TH>Согласовано</TH>
+      <TH>Эскиз</TH>
+      <TH>Исполнитель</TH>
+      <TH>Сдан</TH>
     </TR>
     {% for order in order_list %}
-        <TR>
-	  <TD>{{ order.product.name }}</TD>
-	  <TD>{{ order.price }}</TD>
-	  <TD>{{ order.address }}</TD>
-	  <TD>{{ order.designer.first_name }}</TD>
-	  <TD>{{ order.deadline_dmy }}</TD>
-        </TR>
+      <TR>
+	<TD>{{ order.date_dmy }}</TD>
+	<TD>{{ order.deadline_dmy }}</TD>
+	<TD>{{ order.product.name }}</TD>
+	<TD>{%if order.delivery%} Да {% else %} Нет {% endif %} </TD>
+	<TD>{%if order.lifting%} Да {% else %} Нет {% endif %}</TD>
+	<TD>{{ order.address }}</TD>
+	<TD>{{ order.price }}</TD>
+	<TD>{{ order.paid }}</TD>
+	<TD>{{ order.ostatok }}</TD>
+	<TD>{%if order.approved%} {{ order.approved_date }} {%else%} Нет {% endif %}</TD>
+	<TD>{{order.sketch.sketch_file}}</TD>
+	<TD>{{ order.executor.first_name }}</TD>
+	<TD>{%if order.is_done%} Да {%else%} Нет {% endif %}</TD>
+      </TR>
     {% endfor %}
-    <TR>
-      <TD> ИТОГО:</TD>
-      <TD>{{sum_price}}</TD>
-      <TD></TD>
-      <TD></TD>
-      <TD></TD>
-     </TR>
-    </ul>
+   </ul>
   {% else %}
-    <p> Список заказов пуст</p>
+    <p>Список заказов пуст</p>
   {% endif %}
-  </TABLE>
+  </table>
   </body>
 </html>

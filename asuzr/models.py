@@ -63,17 +63,29 @@ class Order(models.Model):
   delivery = models.BooleanField(default=False)				#доставка
   lifting = models.BooleanField(default=False)				#подъем
   paid = models.DecimalField(max_digits=12, decimal_places=2)		#оплачено
-  approved = models.DateTimeField(null=True, blank = True)				#согласовано
+  approved = models.DateTimeField(null=True, blank = True)		#согласовано
   executor = models.ForeignKey(User, related_name='+')			#id исполнителя
   is_done = models.BooleanField(default=False)				#сдан
-  calls = models.TextField(null=True, blank = True)					#обзвон
-  contact = models.CharField(max_length=150, null=True, blank = True)				#контактное лицо
-  phone_num = models.CharField(max_length=150,null=True, blank = True)				#контактный телефон
+  calls = models.TextField(null=True, blank = True)			#обзвон
+  contact = models.CharField(max_length=150, null=True, blank = True)	#контактное лицо
+  phone_num = models.CharField(max_length=150,null=True, blank = True)	#контактный телефон
   cancelled = models.BooleanField(default=False)			#отменен
+  
+  @property
+  def date_dmy(self):
+    return self.date.strftime("%d/%m/%Y")
   
   @property
   def deadline_dmy(self):
     return self.deadline.strftime("%d/%m/%Y")
+  
+  @property
+  def approved_date(self):
+    return self.approved.strftime("%d/%m/%Y")
+  
+  @property
+  def ostatok(self):
+    return self.price-self.paid
   
 #Эскизы
 class Sketch(models.Model):
