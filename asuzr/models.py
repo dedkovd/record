@@ -3,6 +3,7 @@
 
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import date, timedelta
 
 # Create your models here.
 #Соответствие названий и номеров дней недели
@@ -86,6 +87,13 @@ class Order(models.Model):
   @property
   def ostatok(self):
     return self.price-self.paid
+  
+  @property
+  def calls_color(self):
+    need_color=False
+    if self.approved!=None:
+      need_color = (date.today()-self.approved.date()>= timedelta(days = 10))
+    return need_color
   
 #Эскизы
 class Sketch(models.Model):

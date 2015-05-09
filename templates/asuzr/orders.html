@@ -5,7 +5,7 @@
     <style></style>
   </head>
   <body>
-  <H1>Таблица выхода заказов</H1>
+  <H1>{% if archive %} Архивная таблица заказов {% else %} Таблица выхода заказов {% endif %}</H1>
   <TABLE BORDER WIDTH="100%">
   {% if order_list %}
    <ul>
@@ -23,8 +23,10 @@
       <TH>Эскиз</TH>
       <TH>Исполнитель</TH>
       <TH>Сдан</TH>
+      {% if archive %} <TH>Обзвон</TH> {% endif %}
     </TR>
     {% for order in order_list %}
+      
       <TR>
 	<TD>{{ order.date_dmy }}</TD>
 	<TD>{{ order.deadline_dmy }}</TD>
@@ -39,6 +41,7 @@
 	<TD>{{order.sketch.sketch_file}}</TD>
 	<TD>{{ order.executor.first_name }}</TD>
 	<TD>{%if order.is_done%} Да {%else%} Нет {% endif %}</TD>
+	{% if archive %} <TD {% if order.calls_color%} bgcolor='FFFACD' {% endif %}>{{ order.calls}}</TD> {% endif %}
       </TR>
     {% endfor %}
    </ul>

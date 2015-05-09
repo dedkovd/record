@@ -69,11 +69,17 @@ def main(request, day, month, year):
     })
   return HttpResponse(t.render(c))
 
-def orders (request):
-  order_list = Order.objects.filter(is_done=False).order_by('-id')
+def orders (request, archive):
+  if archive=='0':
+    is_done_value=False
+  else:
+    is_done_value=True
+  
+  order_list = Order.objects.filter(is_done=is_done_value).order_by('-id')
   t=loader.get_template('asuzr/orders.html')
   c=Context({
     'order_list': order_list,
+    'archive': is_done_value,
     })
   return HttpResponse(t.render(c))
 
