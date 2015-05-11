@@ -15,6 +15,9 @@ class Common:
 class Product(models.Model):
   name = models.CharField(max_length=150)
   prod_period = models.IntegerField()#трудоемкость, дней
+
+  def __unicode__(self):
+    return self.name
   
 #Таблица посещаемости
 class Attendance(models.Model):
