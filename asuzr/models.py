@@ -122,3 +122,6 @@ class AccessProtocol(models.Model):
 class OrderPlan(models.Model):
   date = models.DateField()
   plan = models.IntegerField()
+
+  def __unicode__(self):
+    return self.date.strftime('%B %Y')
