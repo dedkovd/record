@@ -74,6 +74,9 @@ class Order(models.Model):
   contact = models.CharField(max_length=150, null=True, blank = True)	#контактное лицо
   phone_num = models.CharField(max_length=150,null=True, blank = True)	#контактный телефон
   cancelled = models.BooleanField(default=False)			#отменен
+
+  def __unicode__(self):
+    return ', '.join((self.date.strftime('%d %b %Y'), self.product.name, self.address))
   
   @property
   def date_dmy(self):
