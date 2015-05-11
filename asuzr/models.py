@@ -106,6 +106,9 @@ class Sketch(models.Model):
   sketch_file = models.FileField(upload_to = 'sketches')	#путь к файу
   order = models.ForeignKey(Order)	#id заказа
 
+  def __unicode__(self):
+    return self.sketch_file.name
+
 #Действия
 class Action(models.Model):
   name = models.CharField(max_length=150)	#наименование действия
