@@ -1,3 +1,7 @@
+{% extends "asuzr/base.html" %}
+
+{% block title %}Таблица посещаемости{% endblock %}
+{% block page %}
 <table WIDTH="100%">
   <TR VALIGN=top>
     <TD WIDTH="40%">{% include 'asuzr/attendance.html' %}</TD>
@@ -6,3 +10,4 @@
   </TR>
 </table>
 {% include 'asuzr/plan_balance.html' %}
+{% endblock %}

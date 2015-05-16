@@ -1,12 +1,9 @@
-<html>
-  <head>
-    <title></title>
-    <meta content="">
-    <style></style>
-  </head>
-  <body>
-  <H1>{% if archive %} Архивная таблица заказов {% else %} Таблица выхода заказов {% endif %}</H1>
-  <TABLE BORDER WIDTH="100%">
+{% extends "asuzr/base.html" %}
+
+{% block title %}{% if archive %} Архивная таблица заказов {% else %} Таблица выхода заказов {% endif %}{% endblock %}
+ 
+{% block page %}
+ <TABLE BORDER WIDTH="100%">
   {% if order_list %}
    <ul>
     <TR>
@@ -49,5 +46,5 @@
     <p>Список заказов пуст</p>
   {% endif %}
   </table>
-  </body>
-</html>
+
+{% endblock %}
