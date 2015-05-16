@@ -5,7 +5,9 @@ from asuzr.models import Product
 from asuzr.models import Attendance
 from asuzr.models import Order
 from asuzr.models import OrderPlan
-from datetime import datetime, date, time
+from datetime import datetime, date
+from django.db.models import Count, Sum
+
 # Create your views here.
 
 def prod_list(request):
@@ -82,5 +84,21 @@ def orders (request, archive):
     'archive': is_done_value,
     })
   return HttpResponse(t.render(c))
+
+def desreport(request):
+  start_date = request.GET.get('sdate', date.today().strftime('%d.%m.%y'))
+  sdate = datetime.strptime(start_date, '%d.%m.%y')
+  end_date = request.GET.get('edate', date.today().strftime('%d.%m.%y'))
+  edate = datetime.strptime(end_date, '%d.%m.%y')
+  des_list = Order.objects.filter(cancelled=False, date__range=(sdate,edate)).values('designer__first_name').annotate(Sum('price'),Count('designer'))
+  t=loader.get_template('asuzr/desreport.html')
+  c=Context({
+    'des_list' : des_list,
+    'start_date' : start_date,
+    'end_date' : end_date,
+    })
+  return HttpResponse(t.render(c))
+
+  
 
 
