@@ -1,0 +1,29 @@
+<html>
+  <head>
+    <title></title>
+    <meta content="">
+    <style></style>
+  </head>
+  <body>
+  <H3>Отчет по дизайнерам за {{start_date}} - {{end_date}} </H3>
+  <TABLE BORDER WIDTH="30%">
+  {% if des_list %}
+   <ul>
+    <TR>
+      <TH WIDTH="40%">Дизайнер</TH>
+      <TH>Всего заказов</TH>
+      <TH>Общая сумма</TH>
+    </TR>
+  {% for des in des_list %}
+     <TR> 
+	<TD>{{des.designer__first_name}}</TD> 
+	<TD>{{des.designer__count}}</TD>
+	<TD>{{des.price__sum}}</TD>
+     </TR>
+  {% endfor %}
+  </ul>
+  {% else %}
+    <p>Список заказов пуст</p>
+  {% endif %}
+  </body>
+</html>
