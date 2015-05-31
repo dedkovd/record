@@ -1,3 +1,4 @@
+{% load inplace_edit %}
   <TABLE BORDER WIDTH="100%">
   {% if attend_list %}
     <ul>
@@ -14,8 +15,8 @@
         <TR bgcolor={{attend.date.weekday_color}}>
 	  <TD>{{ attend.date.date_dd_mm_yy}}</TD>
 	  <TD>{{ attend.date.weekday_name}}</TD>
-	  <TD>{{ attend.attend.calls }}</TD>
-	  <TD>{{ attend.attend.visits }}</TD>
+	  <TD>{% inplace_edit "attend.attend.calls" %}</TD>
+	  <TD>{% inplace_edit "attend.attend.visits" %}</TD>
 	  <TD><a href="{% url 'asuzr-main' attend.date.day attend.date.month attend.date.year %}">{{ attend.orders_count}}</a></TD>
 	  <TD>{{ attend.orders_price}}</TD>
 	  <TD>{{ attend.designers}}</TD>

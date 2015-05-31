@@ -1,4 +1,5 @@
 {% extends "asuzr/base.html" %}
+{% load inplace_edit %}
 
 {% block title %}{% if archive %} Архивная таблица заказов {% else %} Таблица выхода заказов {% endif %}{% endblock %}
  
@@ -27,10 +28,10 @@
       <TR>
 	<TD>{{ order.date_dmy }}</TD>
 	<TD>{{ order.deadline_dmy }}</TD>
-	<TD>{{ order.product.name }}</TD>
+	<TD>{% inplace_edit "order.product.name" %}</TD>
 	<TD>{%if order.delivery%} Да {% else %} Нет {% endif %} </TD>
 	<TD>{%if order.lifting%} Да {% else %} Нет {% endif %}</TD>
-	<TD>{{ order.address }}</TD>
+	<TD>{% inplace_edit "order.address" %}</TD>
 	<TD>{{ order.price }}</TD>
 	<TD>{{ order.paid }}</TD>
 	<TD>{{ order.ostatok }}</TD>

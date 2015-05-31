@@ -1,6 +1,9 @@
+{% load inplace_edit %}
 <html>
 <head>
   <title>Автоматическая система учета заказов студии мебели Рекорд</title> 
+  <script src="{{ STATIC_URL }}admin/js/jquery.min.js" type="text/javascript"></script>
+  {% inplace_static %}
 </head>
 <body> 
 {% block menu %} 
