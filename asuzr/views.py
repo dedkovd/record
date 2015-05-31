@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from django.template import Context, loader
+from django.template import RequestContext, Context, loader
 from asuzr.models import Product
 from asuzr.models import Attendance
 from asuzr.models import Order
@@ -57,7 +57,7 @@ def main(request, day, month, year):
   d_date = p_date.strftime("%d/%m/%Y")
     
   t = loader.get_template('asuzr/attend_order.html')
-  c = Context({
+  c = RequestContext(request,{
     'attend_list': filtered_attend_list,
     'order_list': order_list,
     'sum_calls': sum_calls,
@@ -79,7 +79,7 @@ def orders (request, archive):
   
   order_list = Order.objects.filter(is_done=is_done_value).order_by('-id')
   t=loader.get_template('asuzr/orders.html')
-  c=Context({
+  c=RequestContext(request, {
     'order_list': order_list,
     'archive': is_done_value,
     })

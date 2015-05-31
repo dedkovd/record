@@ -13,4 +13,5 @@ urlpatterns = patterns('',
     url(r'^orders/(?P<archive>\d+)/$', 'asuzr.views.orders'),
     url(r'^desreport/$', 'asuzr.views.desreport'),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^inplaceeditform/', include('inplaceeditform.urls')),
 )
