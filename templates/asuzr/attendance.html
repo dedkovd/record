@@ -8,15 +8,17 @@
       <TH>Посещения</TH>
       <TH>Заказы</TH>
       <TH>Стоимость</TH>
+      <TH>Дизайнеры</TH>
     </TR>
     {% for attend in attend_list %}	
-        <TR bgcolor={{attend.day_color}}>
-	  <TD>{{ attend.date_dd_mm_yy}}</TD>
-	  <TD>{{ attend.week_day}}</TD>
-	  <TD>{{ attend.calls }}</TD>
-	  <TD>{{ attend.visits }}</TD>
-	  <TD><a href="{% url 'asuzr-main' attend.date.day attend.date.month attend.date.year %}">{{ attend.order_count}}</a></TD>
+        <TR bgcolor={{attend.date.weekday_color}}>
+	  <TD>{{ attend.date.date_dd_mm_yy}}</TD>
+	  <TD>{{ attend.date.weekday_name}}</TD>
+	  <TD>{{ attend.attend.calls }}</TD>
+	  <TD>{{ attend.attend.visits }}</TD>
+	  <TD><a href="{% url 'asuzr-main' attend.date.day attend.date.month attend.date.year %}">{{ attend.orders_count}}</a></TD>
 	  <TD>{{ attend.orders_price}}</TD>
+	  <TD>{{ attend.designers}}</TD>
         </TR>
     {% endfor %}
     <TR>
@@ -25,9 +27,10 @@
       <TD>{{sum_visits}}</TD>
       <TD>{{sum_orders}}</TD>
       <TD>{{sum_price}}</TD>
+      <TD></TD>
      </TR>
     </ul>
   {% else %}
-    <p>Список изделий пуст</p>
+    <p>Список пуст</p>
   {% endif %}
   </TABLE>

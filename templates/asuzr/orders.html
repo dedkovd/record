@@ -36,7 +36,7 @@
 	<TD>{{ order.ostatok }}</TD>
 	<TD>{%if order.approved%} {{ order.approved_date }} {%else%} Нет {% endif %}</TD>
 	<TD>{{order.sketch.sketch_file}}</TD>
-	<TD>{{ order.executor.first_name }}</TD>
+	<TD>{{ order.executor.first_name }} {{ order.executor.last_name }}</TD>
 	<TD>{%if order.is_done%} Да {%else%} Нет {% endif %}</TD>
 	{% if archive %} <TD {% if order.calls_color%} bgcolor='FFFACD' {% endif %}>{{ order.calls}}</TD> {% endif %}
       </TR>

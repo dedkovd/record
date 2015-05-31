@@ -5,12 +5,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from datetime import date, timedelta
 
-# Create your models here.
-#Соответствие названий и номеров дней недели
-class Common:
-  day_names = ("Понедельник","Вторник","Среда","Четверг","Пятница","Суббота","Воскресенье")
-  day_colors = ("FFFFFF","FFFFFF","FFFFFF","FFFFFF","FFFFFF","#FFE4E1", "#FFE4E1")
-  
 #Изделия
 class Product(models.Model):
   name = models.CharField(max_length=150)
@@ -19,6 +13,14 @@ class Product(models.Model):
   def __unicode__(self):
     return self.name
   
+#График работы  
+class Schedule(models.Model):
+  date = models.DateField()
+  designer = models.ForeignKey(User)
+  
+  def __unicode__(self):
+    return ', '.join((self.date.strftime('%d %b %Y'), self.designer.first_name,))
+
 #Таблица посещаемости
 class Attendance(models.Model):
   date = models.DateField()
@@ -34,18 +36,6 @@ class Attendance(models.Model):
     return tuple(self.date_dd_mm_yy().split("/"))
   
   @property
-  def week_day(self):
-    day_number = self.date.weekday()
-    day_name = Common.day_names[day_number]
-    return day_name
-  
-  @property
-  def day_color(self):
-    day_number = self.date.weekday()
-    color = Common.day_colors[day_number]
-    return color
-  
-  @property
   def order_count(self):
     return Order.objects.filter(date=self.date).count()
   
@@ -55,6 +45,10 @@ class Attendance(models.Model):
     day_price = sum(o.price for o in orders)
     return day_price
   
+#Статьи затрат  
+class CostItem(models.Model):
+  name = models.CharField(max_length=150)
+  default_item = models.BooleanField(default=False)
 
 #Заказы  
 class Order(models.Model):
@@ -68,12 +62,13 @@ class Order(models.Model):
   lifting = models.BooleanField(default=False)				#подъем
   paid = models.DecimalField(max_digits=12, decimal_places=2)		#оплачено
   approved = models.DateTimeField(null=True, blank = True)		#согласовано
-  executor = models.ForeignKey(User, related_name='+')			#id исполнителя
+  executor = models.ForeignKey(User, null = True, blank = True, related_name='+')	#id исполнителя
   is_done = models.BooleanField(default=False)				#сдан
   calls = models.TextField(null=True, blank = True)			#обзвон
   contact = models.CharField(max_length=150, null=True, blank = True)	#контактное лицо
   phone_num = models.CharField(max_length=150,null=True, blank = True)	#контактный телефон
   cancelled = models.BooleanField(default=False)			#отменен
+  cost_items = models.ManyToManyField(CostItem, through='OrderCosts')   #статьи затрат
 
   def __unicode__(self):
     return ', '.join((self.date.strftime('%d %b %Y'), self.product.name, self.address))
@@ -130,7 +125,14 @@ class AccessProtocol(models.Model):
 #План заказов
 class OrderPlan(models.Model):
   date = models.DateField()
-  plan = models.IntegerField()
+  plan = models.DecimalField(max_digits=12, decimal_places=2)
 
   def __unicode__(self):
     return self.date.strftime('%B %Y')
+
+# Затраты по заказам
+class OrderCosts(models.Model):
+  order = models.ForeignKey(Order)
+  cost_item = models.ForeignKey(CostItem)
+  value = models.DecimalField(max_digits=12, decimal_places=2)
+  formula = models.CharField(max_length=150)
