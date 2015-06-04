@@ -10,6 +10,8 @@ from datetime import datetime, date, timedelta
 import calendar
 from django.db.models import Count, Sum
 from asuzr.common import custom_date
+from tables import *
+from django_tables2 import RequestConfig
 
 def prod_list(request):
   product_list = Product.objects.all()
@@ -127,7 +129,10 @@ def desreport(request):
     })
   return HttpResponse(t.render(c))
 
-
+def table_test(request):
+  table = TestTable(Product.objects.all())
+  RequestConfig(request).configure(table)
+  return render(request, 'asuzr/tabletest.html', {'table': table, 'action': Product.objects.all()[0]})
   
 
 
