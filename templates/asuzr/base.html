@@ -15,7 +15,7 @@
      <li><a href={% url 'asuzr.views.desreport' %}>Отчет по дизайнерам</a></li>
    </ul>
 {% endblock %}
-<H1>{% block title %}Заголовок страницы{% endblock %}</H1> 
+<H1>{% block title %}{{ title }}{% endblock %}</H1> 
 
 {% block page %}
 Тело страницы

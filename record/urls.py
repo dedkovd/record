@@ -3,6 +3,10 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 admin.autodiscover()
 
+js_info_dict = {
+    'packages': ('django.conf',),
+}
+
 urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'record.views.home', name='home'),
@@ -14,4 +18,5 @@ urlpatterns = patterns('',
     url(r'^desreport/$', 'asuzr.views.desreport'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^inplaceeditform/', include('inplaceeditform.urls')),
+    url(r'^jsi18n$', 'django.views.i18n.javascript_catalog', js_info_dict),
 )

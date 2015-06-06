@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import RequestContext, Context, loader
@@ -10,6 +12,8 @@ from datetime import datetime, date, timedelta
 import calendar
 from django.db.models import Count, Sum
 from asuzr.common import custom_date
+from tables import *
+from django_tables2 import RequestConfig
 
 def prod_list(request):
   product_list = Product.objects.all()
@@ -99,16 +103,21 @@ def main(request, day, month, year):
     })
   return HttpResponse(t.render(c))
 
-def orders (request, archive):
+def order_list(request):
+  table = OrdersTable(Order.objects.filter(is_done=False))
+  RequestConfig(request).configure(table)
+  return render(request, 'asuzr/table.html', {'table': table, 'title': 'Таблица выхода заказов'})
+
+def orders(request, archive):
   if archive=='0':
-    is_done_value=False
+    return order_list(request)
   else:
     is_done_value=True
   
-  order_list = Order.objects.filter(is_done=is_done_value).order_by('-id')
+  o_list = Order.objects.filter(is_done=is_done_value).order_by('-id')
   t=loader.get_template('asuzr/orders.html')
   c=RequestContext(request, {
-    'order_list': order_list,
+    'order_list': o_list,
     'archive': is_done_value,
     })
   return HttpResponse(t.render(c))
@@ -126,8 +135,4 @@ def desreport(request):
     'end_date' : end_date,
     })
   return HttpResponse(t.render(c))
-
-
-  
-
 
