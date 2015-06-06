@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import RequestContext, Context, loader
@@ -101,16 +103,21 @@ def main(request, day, month, year):
     })
   return HttpResponse(t.render(c))
 
-def orders (request, archive):
+def order_list(request):
+  table = OrdersTable(Order.objects.filter(is_done=False))
+  RequestConfig(request).configure(table)
+  return render(request, 'asuzr/table.html', {'table': table, 'title': 'Таблица выхода заказов'})
+
+def orders(request, archive):
   if archive=='0':
-    is_done_value=False
+    return order_list(request)
   else:
     is_done_value=True
   
-  order_list = Order.objects.filter(is_done=is_done_value).order_by('-id')
+  o_list = Order.objects.filter(is_done=is_done_value).order_by('-id')
   t=loader.get_template('asuzr/orders.html')
   c=RequestContext(request, {
-    'order_list': order_list,
+    'order_list': o_list,
     'archive': is_done_value,
     })
   return HttpResponse(t.render(c))
@@ -130,9 +137,6 @@ def desreport(request):
   return HttpResponse(t.render(c))
 
 def table_test(request):
-  table = TestTable(Product.objects.all())
+  table = OrdersTable(Order.objects.filter(is_done=False))
   RequestConfig(request).configure(table)
-  return render(request, 'asuzr/tabletest.html', {'table': table, 'action': Product.objects.all()[0]})
-  
-
-
+  return render(request, 'asuzr/tabletest.html', {'table': table})
