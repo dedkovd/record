@@ -17,7 +17,6 @@ urlpatterns = patterns('',
     url(r'^orders/(?P<archive>\d+)/$', 'asuzr.views.orders'),
     url(r'^desreport/$', 'asuzr.views.desreport'),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^table/', 'asuzr.views.table_test'),
     url(r'^inplaceeditform/', include('inplaceeditform.urls')),
     url(r'^jsi18n$', 'django.views.i18n.javascript_catalog', js_info_dict),
 )

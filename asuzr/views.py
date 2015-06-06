@@ -136,7 +136,3 @@ def desreport(request):
     })
   return HttpResponse(t.render(c))
 
-def table_test(request):
-  table = OrdersTable(Order.objects.filter(is_done=False))
-  RequestConfig(request).configure(table)
-  return render(request, 'asuzr/tabletest.html', {'table': table})
