@@ -34,7 +34,7 @@
  <li><a href={% url 'asuzr.views.desreport' %}>Отчет по дизайнерам</a></li>
 </ul>
 <div id="user">
-{% if request.user.is_authenticated %}Добро пожаловать, {{ request.user.username }}
+{% if request.user.is_authenticated %}Добро пожаловать, {{ request.user.first_name }}
 {% else %}<a href="{% url 'django.contrib.auth.views.login' %}">Вход</a>{% endif %}
 <br><a href="{% url 'django.contrib.auth.views.logout' %}">Выход</a>
 </div>
