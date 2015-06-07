@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import RequestContext, Context, loader
@@ -11,6 +13,8 @@ import calendar
 from django.db.models import Count, Sum
 from asuzr.common import custom_date
 from django.contrib.auth.decorators import login_required
+from tables import *
+from django_tables2 import RequestConfig
 
 @login_required 
 def prod_list(request):
@@ -102,23 +106,13 @@ def main(request, day, month, year):
   return HttpResponse(t.render(c))
 
 @login_required 
-def orders (request, archive):
-  if archive=='0':
-      is_done_value=False
-  else:
-      is_done_value=True
-  order_id=request.GET.get('order_id',0)
-  order_list = Order.objects.filter(is_done=is_done_value).order_by('-id')
-  sel_order = Order.objects.filter(id=order_id)
-  cost_items = sel_order.values('cost_items')
-  t=loader.get_template('asuzr/orders.html')
-  c=RequestContext(request, {
-      'order_list': order_list,
-      'archive': is_done_value,
-      'sel_order' : sel_order,
-      'cost_items' : cost_items,
-      })
-  return HttpResponse(t.render(c))
+def orders(request, archive):
+  is_archive = (archive == '1')
+  Table = ArchiveOrdersTable if is_archive else OrdersTable
+  table = Table(Order.objects.filter(is_done = is_archive))
+  title = 'Архивная таблица заказов' if is_archive else 'Таблица выхода заказов'
+  RequestConfig(request).configure(table)
+  return render(request, 'asuzr/table.html', {'table': table, 'title': title})
 
 @login_required 
 def desreport(request):
@@ -147,7 +141,3 @@ def production_table(request, order_id):
     'cost_items' : cost_items,
     })
   return HttpResponse(t.render(c))
-
-  
-
-
