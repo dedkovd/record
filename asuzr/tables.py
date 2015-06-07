@@ -65,3 +65,9 @@ class OrdersTable(tables.Table):
                 'sketch',
                 'executor',
                 'is_done',)
+
+class ArchiveOrdersTable(OrdersTable):
+  calls = EditableColumn('calls', verbose_name = 'Обзвон')
+
+  class Meta:
+    attrs = {'class': 'paleblue'}

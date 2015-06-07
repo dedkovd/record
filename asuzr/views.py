@@ -103,24 +103,13 @@ def main(request, day, month, year):
     })
   return HttpResponse(t.render(c))
 
-def order_list(request):
-  table = OrdersTable(Order.objects.filter(is_done=False))
-  RequestConfig(request).configure(table)
-  return render(request, 'asuzr/table.html', {'table': table, 'title': 'Таблица выхода заказов'})
-
 def orders(request, archive):
-  if archive=='0':
-    return order_list(request)
-  else:
-    is_done_value=True
-  
-  o_list = Order.objects.filter(is_done=is_done_value).order_by('-id')
-  t=loader.get_template('asuzr/orders.html')
-  c=RequestContext(request, {
-    'order_list': o_list,
-    'archive': is_done_value,
-    })
-  return HttpResponse(t.render(c))
+  is_archive = (archive == '1')
+  Table = ArchiveOrdersTable if is_archive else OrdersTable
+  table = Table(Order.objects.filter(is_done = is_archive))
+  title = 'Архивная таблица заказов' if is_archive else 'Таблица выхода заказов'
+  RequestConfig(request).configure(table)
+  return render(request, 'asuzr/table.html', {'table': table, 'title': title})
 
 def desreport(request):
   start_date = request.GET.get('sdate', date.today().strftime('%d.%m.%y'))
