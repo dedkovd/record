@@ -1,0 +1,26 @@
+ <TABLE BORDER WIDTH="100%">
+  {% if cost_items %}
+    <ul>
+    <TR>
+      <TH>{{sel_order.product.name}} <br> Комплектующие</TH>
+      <TH>Стоимость <br> {{sel_order.price}}</TH>
+    </TR>
+    {% for item in cost_items %}
+        <TR>
+	  <TD>{{ item }}</TD>
+	  <TD></TD>
+        </TR>
+    {% endfor %}
+    <TR>
+      <TD> Итого затрат</TD>
+      <TD></TD>
+    </TR>
+    <TR>
+      <TD> Прибыль</TD>
+      <TD></TD>
+    </TR>
+    </ul>
+  {% else %}
+    <p> Список пуст</p>
+  {% endif %}
+  </TABLE>

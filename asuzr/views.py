@@ -12,9 +12,11 @@ from datetime import datetime, date, timedelta
 import calendar
 from django.db.models import Count, Sum
 from asuzr.common import custom_date
+from django.contrib.auth.decorators import login_required
 from tables import *
 from django_tables2 import RequestConfig
 
+@login_required 
 def prod_list(request):
   product_list = Product.objects.all()
   t = loader.get_template('asuzr/prod_list.html')
@@ -23,9 +25,9 @@ def prod_list(request):
     })
   return HttpResponse(t.render(c))
 
+@login_required 
 def prod_detail(request, prod_id):
   return HttpResponse("This is %s" % prod_id)
-
 
 def get_filtered_list(p_list, year, month):
   filtered_list=[]
@@ -40,7 +42,7 @@ def get_orders_by_date(dt):
   order_list = Order.objects.filter(date=dt).order_by('id')
   return order_list
 
-
+@login_required 
 def main(request, day, month, year):
   d,m,y=int(day),int(month), int(year)
   
@@ -103,6 +105,7 @@ def main(request, day, month, year):
     })
   return HttpResponse(t.render(c))
 
+@login_required 
 def orders(request, archive):
   is_archive = (archive == '1')
   Table = ArchiveOrdersTable if is_archive else OrdersTable
@@ -111,6 +114,7 @@ def orders(request, archive):
   RequestConfig(request).configure(table)
   return render(request, 'asuzr/table.html', {'table': table, 'title': title})
 
+@login_required 
 def desreport(request):
   start_date = request.GET.get('sdate', date.today().strftime('%d.%m.%y'))
   sdate = datetime.strptime(start_date, '%d.%m.%y')
@@ -118,10 +122,22 @@ def desreport(request):
   edate = datetime.strptime(end_date, '%d.%m.%y')
   des_list = Order.objects.filter(cancelled=False, date__range=(sdate,edate)).values('designer__first_name','designer__last_name').annotate(Sum('price'),Count('designer'))
   t=loader.get_template('asuzr/desreport.html')
-  c=Context({
+  c=RequestContext(request,{
     'des_list' : des_list,
     'start_date' : start_date,
     'end_date' : end_date,
     })
   return HttpResponse(t.render(c))
 
+@login_required
+def production_table(request, order_id):
+  order_list = Order.objects.filter(is_done=False).order_by('-id')
+  sel_order = Order.objects.filter(id=order_id)
+  cost_items = sel_order.values('cost_items')
+  t=loader.get_template('asuzr/order_costs.html')
+  c=RequestContext(request,{
+    'order_list' : order_list,
+    'sel_order' : sel_order,
+    'cost_items' : cost_items,
+    })
+  return HttpResponse(t.render(c))

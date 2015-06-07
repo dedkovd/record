@@ -1,0 +1,22 @@
+{% block page %}
+  <TABLE BORDER>
+  {% if order_list %}
+   <ul>
+    <TR>
+      <TH WIDTH="40%">Наименование</TH>
+      <TH>Срок сдачи</TH>
+      <TH>Адрес</TH>
+    </TR>
+  {% for o in order_list %}
+     <TR> 
+	<TD>{{o.product.name}}</TD> 
+	<TD>{{o.date_dmy}}</TD>
+	<TD>{{o.address}}</TD>
+     </TR>
+  {% endfor %}
+  </ul>
+  {% else %}
+    <p>Список заказов пуст</p>
+  {% endif %}
+  </table>
+{% endblock %}

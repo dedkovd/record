@@ -1,0 +1,12 @@
+{% extends "asuzr/base.html" %}
+
+{% block title %} Производственная таблица {% endblock %}
+{% block page %}
+<table WIDTH="100%">
+  <TR VALIGN=top>
+    <TD WIDTH="50%">{% include 'asuzr/production_table.html' %}</TD>
+    <TD WIDTH="5%"></TD>
+    <TD WIDTH="45%">{% include 'asuzr/cost_items.html' %}</TD>
+  </TR>
+</table>
+{% endblock %}
