@@ -1,4 +1,5 @@
 from django.conf.urls import patterns, include, url
+from django.contrib.auth.views import login, logout
 
 from django.contrib import admin
 admin.autodiscover()
@@ -15,4 +16,6 @@ urlpatterns = patterns('',
     url(r'^production_table/(?P<order_id>\d+)/$', 'asuzr.views.production_table'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^inplaceeditform/', include('inplaceeditform.urls')),
+    url(r'^accounts/login/$',  login),
+    url(r'^accounts/logout/$', logout),
 )

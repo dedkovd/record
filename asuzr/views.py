@@ -12,6 +12,7 @@ from django.db.models import Count, Sum
 from asuzr.common import custom_date
 from django.contrib.auth.decorators import login_required
 
+@login_required 
 def prod_list(request):
   product_list = Product.objects.all()
   t = loader.get_template('asuzr/prod_list.html')
@@ -20,9 +21,9 @@ def prod_list(request):
     })
   return HttpResponse(t.render(c))
 
+@login_required 
 def prod_detail(request, prod_id):
   return HttpResponse("This is %s" % prod_id)
-
 
 def get_filtered_list(p_list, year, month):
   filtered_list=[]
@@ -37,7 +38,7 @@ def get_orders_by_date(dt):
   order_list = Order.objects.filter(date=dt).order_by('id')
   return order_list
 
-
+@login_required 
 def main(request, day, month, year):
   d,m,y=int(day),int(month), int(year)
   
@@ -119,6 +120,7 @@ def orders (request, archive):
       })
   return HttpResponse(t.render(c))
 
+@login_required 
 def desreport(request):
   start_date = request.GET.get('sdate', date.today().strftime('%d.%m.%y'))
   sdate = datetime.strptime(start_date, '%d.%m.%y')
@@ -133,6 +135,7 @@ def desreport(request):
     })
   return HttpResponse(t.render(c))
 
+@login_required
 def production_table(request, order_id):
   order_list = Order.objects.filter(is_done=False).order_by('-id')
   sel_order = Order.objects.filter(id=order_id)
