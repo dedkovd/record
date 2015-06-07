@@ -8,6 +8,9 @@ from asuzr.models import AccessProtocol
 from asuzr.models import OrderPlan
 from asuzr.models import Attendance
 from asuzr.models import Schedule
+from asuzr.models import OrderCosts
+from asuzr.models import CostItem
+
 
 # Register your models here.
 #admin.site.register(Product)
@@ -21,6 +24,8 @@ admin.site.register(ProdPlan)
 admin.site.register(AccessProtocol)
 admin.site.register(OrderPlan)
 admin.site.register(Schedule)
+admin.site.register(OrderCosts)
+admin.site.register(CostItem)
 class AttendAdmin(admin.ModelAdmin):
   list_display=('date', 'calls', 'visits')
 admin.site.register(Attendance, AttendAdmin)

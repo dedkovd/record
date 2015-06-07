@@ -10,6 +10,7 @@ from datetime import datetime, date, timedelta
 import calendar
 from django.db.models import Count, Sum
 from asuzr.common import custom_date
+from django.contrib.auth.decorators import login_required
 
 def prod_list(request):
   product_list = Product.objects.all()
@@ -99,18 +100,23 @@ def main(request, day, month, year):
     })
   return HttpResponse(t.render(c))
 
+@login_required 
 def orders (request, archive):
   if archive=='0':
-    is_done_value=False
+      is_done_value=False
   else:
-    is_done_value=True
-  
+      is_done_value=True
+  order_id=request.GET.get('order_id',0)
   order_list = Order.objects.filter(is_done=is_done_value).order_by('-id')
+  sel_order = Order.objects.filter(id=order_id)
+  cost_items = sel_order.values('cost_items')
   t=loader.get_template('asuzr/orders.html')
   c=RequestContext(request, {
-    'order_list': order_list,
-    'archive': is_done_value,
-    })
+      'order_list': order_list,
+      'archive': is_done_value,
+      'sel_order' : sel_order,
+      'cost_items' : cost_items,
+      })
   return HttpResponse(t.render(c))
 
 def desreport(request):
@@ -120,13 +126,24 @@ def desreport(request):
   edate = datetime.strptime(end_date, '%d.%m.%y')
   des_list = Order.objects.filter(cancelled=False, date__range=(sdate,edate)).values('designer__first_name','designer__last_name').annotate(Sum('price'),Count('designer'))
   t=loader.get_template('asuzr/desreport.html')
-  c=Context({
+  c=RequestContext(request,{
     'des_list' : des_list,
     'start_date' : start_date,
     'end_date' : end_date,
     })
   return HttpResponse(t.render(c))
 
+def production_table(request, order_id):
+  order_list = Order.objects.filter(is_done=False).order_by('-id')
+  sel_order = Order.objects.filter(id=order_id)
+  cost_items = sel_order.values('cost_items')
+  t=loader.get_template('asuzr/order_costs.html')
+  c=RequestContext(request,{
+    'order_list' : order_list,
+    'sel_order' : sel_order,
+    'cost_items' : cost_items,
+    })
+  return HttpResponse(t.render(c))
 
   
 

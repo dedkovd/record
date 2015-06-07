@@ -28,7 +28,7 @@
       <TR>
 	<TD>{{ order.date_dmy }}</TD>
 	<TD>{{ order.deadline_dmy }}</TD>
-	<TD>{% inplace_edit "order.product.name" %}</TD>
+	<TD>{% inplace_edit "order.product" %}</TD>
 	<TD>{%if order.delivery%} Да {% else %} Нет {% endif %} </TD>
 	<TD>{%if order.lifting%} Да {% else %} Нет {% endif %}</TD>
 	<TD>{% inplace_edit "order.address" %}</TD>

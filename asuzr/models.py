@@ -49,6 +49,9 @@ class Attendance(models.Model):
 class CostItem(models.Model):
   name = models.CharField(max_length=150)
   default_item = models.BooleanField(default=False)
+  
+  def __unicode__(self):
+   return self.name
 
 #Заказы  
 class Order(models.Model):
@@ -132,7 +135,10 @@ class OrderPlan(models.Model):
 
 # Затраты по заказам
 class OrderCosts(models.Model):
-  order = models.ForeignKey(Order)
-  cost_item = models.ForeignKey(CostItem)
-  value = models.DecimalField(max_digits=12, decimal_places=2)
-  formula = models.CharField(max_length=150)
+  order = models.ForeignKey(Order, related_name='+')
+  cost_item = models.ForeignKey(CostItem, related_name='+')
+  value = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank = True)
+  formula = models.CharField(max_length=150, null=True, blank = True)
+  
+  def __unicode__(self):
+   return ', '.join((self.order.product.name, self.cost_item.name))
