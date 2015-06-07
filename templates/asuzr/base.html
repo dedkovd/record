@@ -16,16 +16,28 @@
       border: 1px solid #000; /* Рамка вокруг текста */
       padding: 3px; /* Поля вокруг текста */
     }
-  </style>
+    #user {
+      float: right;
+      text-align: right;
+    }
+    #menu, #user {
+      display: inline;
+    }
+ </style>
 </head>
 <body> 
-{% block menu %} 
-    <ul id="menu" class="hr">
-     <li><a href={% url 'asuzr-main' 1 5 2015 %}>Таблица посещаемости</a></li>
-     <li><a href={% url 'asuzr.views.orders' 0 %}>Таблица выхода заказов</a></li>
-     <li><a href={% url 'asuzr.views.orders' 1 %}>Архивная таблица</a></li>
-     <li><a href={% url 'asuzr.views.desreport' %}>Отчет по дизайнерам</a></li>
-   </ul>
+{% block menu %}
+<ul id="menu" class="hr">
+ <li><a href={% url 'asuzr-main' 1 5 2015 %}>Таблица посещаемости</a></li>
+ <li><a href={% url 'asuzr.views.orders' 0 %}>Таблица выхода заказов</a></li>
+ <li><a href={% url 'asuzr.views.orders' 1 %}>Архивная таблица</a></li>
+ <li><a href={% url 'asuzr.views.desreport' %}>Отчет по дизайнерам</a></li>
+</ul>
+<div id="user">
+{% if request.user.is_authenticated %}Добро пожаловать, {{ request.user.username }}
+{% else %}<a href="{% url 'django.contrib.auth.views.login' %}">Вход</a>{% endif %}
+<br><a href="{% url 'django.contrib.auth.views.logout' %}">Выход</a>
+</div>
 {% endblock %}
 <H1>{% block title %}{{ title }}{% endblock %}</H1> 
 
