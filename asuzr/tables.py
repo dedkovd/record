@@ -33,7 +33,7 @@ class OrdersTable(tables.Table):
   paid = EditableColumn('paid', verbose_name = 'Оплачено')
   ostatok = tables.Column(verbose_name = 'Остаток')
   approved = EditableColumn('approved', verbose_name = 'Согласовано')
-  sketch = tables.LinkColumn('sketches', verbose_name = 'Эскиз')
+  sketch = tables.LinkColumn('asuzr.views.sketches', verbose_name = 'Эскизы', args=[tables.utils.A('pk')])
   executor = EditableColumn('executor', verbose_name = 'Исполнитель')
   is_done = EditableColumn('is_done', verbose_name = 'Сдан')
   id = tables.Column(visible = False)
@@ -68,6 +68,13 @@ class OrdersTable(tables.Table):
 
 class ArchiveOrdersTable(OrdersTable):
   calls = EditableColumn('calls', verbose_name = 'Обзвон')
+
+  class Meta:
+    attrs = {'class': 'paleblue'}
+
+class SketchesTable(tables.Table):
+  sketch_file = tables.FileColumn(verbose_name = 'Имя файла')
+  sketch_image = tables.Column(verbose_name = 'Эскиз')
 
   class Meta:
     attrs = {'class': 'paleblue'}

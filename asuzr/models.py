@@ -89,6 +89,10 @@ class Order(models.Model):
     return self.approved.strftime("%d/%m/%Y")
   
   @property
+  def sketch(self):
+    return len(Sketch.objects.filter(order = self))
+
+  @property
   def ostatok(self):
     return self.price-self.paid
   
