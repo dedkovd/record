@@ -105,6 +105,13 @@ def main(request, day, month, year):
     })
   return HttpResponse(t.render(c))
 
+@login_required
+def sketches(request, order_id):
+  curr_order = Order.objects.get(pk = order_id)
+  table = SketchesTable(Sketch.objects.filter(order = curr_order))
+  RequestConfig(request).configure(table)
+  return render(request, 'asuzr/table.html', {'table': table, 'title': 'Эскизы заказа %s' % curr_order})
+
 @login_required 
 def orders(request, archive):
   is_archive = (archive == '1')

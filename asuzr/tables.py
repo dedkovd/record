@@ -11,7 +11,14 @@ def editable(field_name):
 class EditableColumn(tables.TemplateColumn):
   def __init__(self, field_name, *args, **kwargs):
     super(tables.TemplateColumn, self).__init__(*args, **kwargs)
+    print kwargs
     template = '{{% load inplace_edit %}}\n\n{{% inplace_edit "record.{field}" auto_height = 1 %}}'.format(field = field_name)
+    self.template_code = template
+
+class ThumbnailColumn(tables.TemplateColumn):
+  def __init__(self, field_name, *args, **kwargs):
+    super(tables.TemplateColumn, self).__init__(*args, **kwargs)
+    template = '{{% load thumbnail %}}\n\n{{% thumbnail record.{field} "100x100" as im %}}<img src="{{{{ im.url }}}}">{{% endthumbnail %}}'.format(field = field_name)
     self.template_code = template
 
 class TestTable(tables.Table):
@@ -33,7 +40,7 @@ class OrdersTable(tables.Table):
   paid = EditableColumn('paid', verbose_name = 'Оплачено')
   ostatok = tables.Column(verbose_name = 'Остаток')
   approved = EditableColumn('approved', verbose_name = 'Согласовано')
-  sketch = tables.LinkColumn('sketches', verbose_name = 'Эскиз')
+  sketch = tables.LinkColumn('asuzr.views.sketches', verbose_name = 'Эскизы', args=[tables.utils.A('pk')])
   executor = EditableColumn('executor', verbose_name = 'Исполнитель')
   is_done = EditableColumn('is_done', verbose_name = 'Сдан')
   id = tables.Column(visible = False)
@@ -82,6 +89,10 @@ class DesignerTable(tables.Table):
   
   def render_sum_price(self, value):
     return '%0.1f' % value
-  
+
+class SketchesTable(tables.Table):
+  sketch_file = tables.FileColumn(verbose_name = 'Имя файла')
+  sketch_image = ThumbnailColumn('sketch_file', verbose_name = 'Эскиз', orderable = False)
+
   class Meta:
     attrs = {'class': 'paleblue'}

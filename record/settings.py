@@ -39,7 +39,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'inplaceeditform',
     'django_tables2',
-    'asuzr'
+    'sorl.thumbnail',
+    'asuzr',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -85,6 +86,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-TEMPLATE_DIRS = ('/home/anastasia/projects/django/record/templates/')
+TEMPLATE_DIRS = ('templates/')
 
 TEMPLATE_CONTEXT_PROCESSORS += ('django.core.context_processors.request',)
+
+MEDIA_ROOT = 'media/'
+
+MEDIA_URL = 'http://127.0.0.1:8000/media/'

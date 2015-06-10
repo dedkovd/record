@@ -89,6 +89,10 @@ class Order(models.Model):
     return self.approved.strftime("%d/%m/%Y %H:%M")
   
   @property
+  def sketch(self):
+    return len(Sketch.objects.filter(order = self))
+
+  @property
   def ostatok(self):
     return self.price-self.paid
   
@@ -101,7 +105,7 @@ class Order(models.Model):
   
 #Эскизы
 class Sketch(models.Model):
-  sketch_file = models.FileField(upload_to = 'sketches')	#путь к файу
+  sketch_file = models.FileField(upload_to = 'sketches/')	#путь к файу
   order = models.ForeignKey(Order)	#id заказа
 
   def __unicode__(self):
