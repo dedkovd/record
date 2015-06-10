@@ -105,7 +105,7 @@ class Order(models.Model):
   
 #Эскизы
 class Sketch(models.Model):
-  sketch_file = models.FileField(upload_to = 'sketches')	#путь к файу
+  sketch_file = models.FileField(upload_to = 'sketches/')	#путь к файу
   order = models.ForeignKey(Order)	#id заказа
 
   def __unicode__(self):

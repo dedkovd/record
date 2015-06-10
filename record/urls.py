@@ -1,5 +1,8 @@
 from django.conf.urls import patterns, include, url
 from django.contrib.auth.views import login, logout
+from django.conf.urls.static import static
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.conf import settings
 
 from django.contrib import admin
 admin.autodiscover()
@@ -9,9 +12,6 @@ js_info_dict = {
 }
 
 urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'record.views.home', name='home'),
-    # url(r'^blog/', include('blog.urls')),
     url(r'^product/$', 'asuzr.views.prod_list'),
     url(r'^product/(?P<prod_id>\d+)/$', 'asuzr.views.prod_detail'),
     url(r'^main/(?P<day>\d+)/(?P<month>\d+)/(?P<year>\d+)/$', 'asuzr.views.main', name='asuzr-main'),
@@ -25,3 +25,9 @@ urlpatterns = patterns('',
     url(r'^accounts/logout/$', logout),
     url(r'^jsi18n$', 'django.views.i18n.javascript_catalog', js_info_dict),
 )
+
+if settings.DEBUG:
+    # static files (images, css, javascript, etc.)
+    urlpatterns += patterns('',
+        (r'^media/(?P<path>.*)$', 'django.views.static.serve', {
+        'document_root': settings.MEDIA_ROOT}))

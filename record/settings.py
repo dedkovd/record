@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'inplaceeditform',
     'django_tables2',
+    'sorl.thumbnail',
     'asuzr',
 )
 
