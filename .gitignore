@@ -1,5 +1,5 @@
 *swp
 *.pyc
 db*
-record/settings.py
+.directory
 sketches/*
