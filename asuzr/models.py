@@ -86,7 +86,7 @@ class Order(models.Model):
   
   @property
   def approved_date(self):
-    return self.approved.strftime("%d/%m/%Y")
+    return self.approved.strftime("%d/%m/%Y %H:%M")
   
   @property
   def ostatok(self):

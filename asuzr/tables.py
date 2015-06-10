@@ -71,3 +71,17 @@ class ArchiveOrdersTable(OrdersTable):
 
   class Meta:
     attrs = {'class': 'paleblue'}
+    
+class DesignerTable(tables.Table):
+  full_name = tables.Column(empty_values=(), verbose_name = 'Дизайнер')
+  designer__count = tables.Column(verbose_name = 'Всего заказов')
+  price__sum = tables.Column(verbose_name = 'Общая сумма')
+  
+  def render_full_name(self, record):
+    return " ".join((record['designer__first_name'], record['designer__last_name']))
+  
+  def render_sum_price(self, value):
+    return '%0.1f' % value
+  
+  class Meta:
+    attrs = {'class': 'paleblue'}
