@@ -81,7 +81,7 @@ class ArchiveOrdersTable(OrdersTable):
 
 class SketchesTable(tables.Table):
   sketch_file = tables.FileColumn(verbose_name = 'Имя файла')
-  sketch_image = ThumbnailColumn('sketch_file', verbose_name = 'Эскиз')
+  sketch_image = ThumbnailColumn('sketch_file', verbose_name = 'Эскиз', orderable = False)
 
   class Meta:
     attrs = {'class': 'paleblue'}
