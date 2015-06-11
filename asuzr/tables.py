@@ -89,6 +89,9 @@ class DesignerTable(tables.Table):
   
   def render_sum_price(self, value):
     return '%0.1f' % value
+  
+  class Meta:
+    attrs = {'class': 'paleblue'}
 
 class SketchesTable(tables.Table):
   sketch_file = tables.FileColumn(verbose_name = 'Имя файла')

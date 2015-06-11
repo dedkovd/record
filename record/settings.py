@@ -56,7 +56,6 @@ ROOT_URLCONF = 'record.urls'
 
 WSGI_APPLICATION = 'record.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 

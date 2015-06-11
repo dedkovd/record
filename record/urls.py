@@ -14,7 +14,7 @@ js_info_dict = {
 urlpatterns = patterns('',
     url(r'^product/$', 'asuzr.views.prod_list'),
     url(r'^product/(?P<prod_id>\d+)/$', 'asuzr.views.prod_detail'),
-    url(r'^main/(?P<day>\d+)/(?P<month>\d+)/(?P<year>\d+)/$', 'asuzr.views.main', name='asuzr-main'),
+    url(r'^main/?(?P<day>\d+)?/?(?P<month>\d+)?/?(?P<year>\d+)?/$', 'asuzr.views.main', name='asuzr-main'),
     url(r'^orders/(?P<archive>\d+)/$', 'asuzr.views.orders',name='asuzr-orders'),
     url(r'^desreport/$', 'asuzr.views.desreport'),
     url(r'^production_table/(?P<order_id>\d+)/$', 'asuzr.views.production_table'),

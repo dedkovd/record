@@ -44,6 +44,13 @@ def get_orders_by_date(dt):
 
 @login_required 
 def main(request, day, month, year):
+  if day == None:
+    day = str(date.today().day)
+  if month == None:
+    month = str(date.today().month)
+  if year == None:
+    year = str(date.today().year)
+    
   d,m,y=int(day),int(month), int(year)
   
   attend_list = Attendance.objects.all().order_by('date')
@@ -129,7 +136,7 @@ def desreport(request):
   edate = datetime.strptime(end_date, '%d.%m.%y')
   Table = DesignerTable
   table = Table(Order.objects.filter(cancelled=False, date__range=(sdate,edate)).values('designer__first_name','designer__last_name').annotate(Sum('price'),Count('designer')))
-  title = 'Отчет по дизайнерам за '+' - '.join((start_date, end_date))
+  title = u'Отчет по дизайнерам за '+' - '.join((start_date, end_date))
   RequestConfig(request).configure(table)
   return render(request, 'asuzr/table.html', {'table': table, 'title': title})
 
