@@ -11,7 +11,6 @@ def editable(field_name):
 class EditableColumn(tables.TemplateColumn):
   def __init__(self, field_name, *args, **kwargs):
     super(tables.TemplateColumn, self).__init__(*args, **kwargs)
-    print kwargs
     template = '{{% load inplace_edit %}}\n\n{{% inplace_edit "record.{field}" auto_height = 1 %}}'.format(field = field_name)
     self.template_code = template
 
@@ -20,14 +19,6 @@ class ThumbnailColumn(tables.TemplateColumn):
     super(tables.TemplateColumn, self).__init__(*args, **kwargs)
     template = '{{% load thumbnail %}}\n\n{{% thumbnail record.{field} "100x100" as im %}}<img src="{{{{ im.url }}}}">{{% endthumbnail %}}'.format(field = field_name)
     self.template_code = template
-
-class TestTable(tables.Table):
-    name = EditableColumn('name', "Наименование")
-    prod_period = EditableColumn('prod_period', "Время производства")
-
-    class Meta:
-        model = Product
-        attrs = {"class": "paleblue"}
 
 class OrdersTable(tables.Table):
   date = tables.DateColumn('d/m/Y', verbose_name = 'Дата')
@@ -78,6 +69,7 @@ class ArchiveOrdersTable(OrdersTable):
 
   class Meta:
     attrs = {'class': 'paleblue'}
+    empty_text = 'Архивных заказов нет'
 
 class SketchesTable(tables.Table):
   sketch_file = tables.FileColumn(verbose_name = 'Имя файла')
