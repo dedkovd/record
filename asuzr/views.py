@@ -173,7 +173,7 @@ def desreport(request):
   edate = datetime.strptime(end_date, '%d.%m.%y')
   Table = DesignerTable
   table = Table(Order.objects.filter(cancelled=False, date__range=(sdate,edate)).values('designer__first_name','designer__last_name').annotate(Sum('price'),Count('designer')))
-  title = 'Отчет по дизайнерам за '+' - '.join((start_date, end_date))
+  title = u'Отчет по дизайнерам за '+' - '.join((start_date, end_date))
   RequestConfig(request).configure(table)
   return render(request, 'asuzr/table.html', {'table': table, 'title': title})
 
