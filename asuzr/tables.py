@@ -121,7 +121,15 @@ class VisitTable(tables.Table):
   orders = tables.Column(verbose_name = 'Заказы', accessor = 'order.product__count')
   cost = tables.Column(verbose_name = 'Стоимость', accessor = 'order.price__sum')
   designer = tables.Column(verbose_name = 'Дизайнеры')
+ 
+  summary = ['Всего','',0,0,0,0,'']
 
+  def set_summaries(self, summaries):
+    indexes = {'calls': 2, 'visits': 3, 'orders': 4, 'cost': 5}
+    for s in summaries:
+      idx = indexes[s]
+      self.summary[idx] = summaries[s]
+ 
   def render_orders(self, value, record, column):
     value = 0 if value == None else value
     return mark_safe('<a href="%s?date=%s">%s</a>' % (
