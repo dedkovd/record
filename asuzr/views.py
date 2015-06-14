@@ -42,6 +42,42 @@ def get_orders_by_date(dt):
   order_list = Order.objects.filter(date=dt).order_by('id')
   return order_list
 
+@login_required
+def visit_view(request):
+  curr_date = datetime.strptime(request.GET.get('date', date.today().strftime('%d.%m.%Y')), '%d.%m.%Y')
+  y,m = curr_date.year, curr_date.month
+  day_in_month = calendar.monthrange(y,m)[1]
+  month_days = {i+1: {'date': custom_date(y,m,i+1)} for i in range(day_in_month)}
+  sdate = date(y,m,1)
+  edate = date(y,m,day_in_month)
+
+  attend_list = Attendance.objects.filter(date__range = (sdate,edate))
+  for attend in attend_list:
+    month_days[attend.date.day]['attend'] = attend
+
+  order_list = Order.objects.filter(date__range = (sdate,edate))
+  order_list = order_list.values('date')
+  order_list = order_list.annotate(Count('product'), Sum('price'))
+
+  for order in order_list:
+    month_days[order['date'].day]['order'] = order
+
+  schedule = Schedule.objects.filter(date__range = (sdate,edate))
+  
+  for designer in schedule:
+    day = designer.date.day
+    if 'designer' in month_days[day]:
+      month_days[day]['designer'] = '%s, %s' % (month_days[day]['designer'], designer)
+    else:
+      month_days[day]['designer'] = designer
+
+  print month_days 
+ 
+  table = VisitTable(month_days.values())
+  RequestConfig(request, paginate={'per_page': 32}).configure(table)
+  title = 'Таблица посещаемости на %s г.' % curr_date.strftime('%B %Y')
+  return render(request, 'asuzr/table.html', {'table': table, 'title': title})
+
 @login_required 
 def main(request, day, month, year):
   if day == None:

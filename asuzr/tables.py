@@ -1,33 +1,45 @@
 # -*- coding: utf-8 -*-
 
+from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
+from django.utils.html import escape
 import django_tables2 as tables
 from models import *
 
-def editable(field_name):
-  return '{{% load inplace_edit %}}\n\n{{% inplace_edit "record.{field}" auto_height = 1 %}}'.format(field = field_name)
-
-
 class EditableColumn(tables.TemplateColumn):
-  def __init__(self, field_name, *args, **kwargs):
+  def __init__(self, field_name, object_name = '', *args, **kwargs):
     super(tables.TemplateColumn, self).__init__(*args, **kwargs)
-    print kwargs
-    template = '{{% load inplace_edit %}}\n\n{{% inplace_edit "record.{field}" auto_height = 1 %}}'.format(field = field_name)
-    self.template_code = template
+    template = '''
+                {{{{% load inplace_edit %}}}}
+
+                {main_part}
+               '''
+    main_part = ''
+    if object_name == '':
+       main_part = '''
+                    {{% inplace_edit "record.{field}" auto_height = 1 %}}
+                   '''
+    else:
+       main_part = '''
+                    {{% if record.{object_name} %}}
+                      {{% inplace_edit "record.{object_name}.{field}" auto_height = 1 %}}
+                    {{% endif %}}
+                   '''
+    template = template.format(main_part = main_part)   
+ 
+    self.template_code = template.format(field = field_name, object_name = object_name)
 
 class ThumbnailColumn(tables.TemplateColumn):
   def __init__(self, field_name, *args, **kwargs):
     super(tables.TemplateColumn, self).__init__(*args, **kwargs)
-    template = '{{% load thumbnail %}}\n\n{{% thumbnail record.{field} "100x100" as im %}}<img src="{{{{ im.url }}}}">{{% endthumbnail %}}'.format(field = field_name)
+    template = '''
+                 {{% load thumbnail %}}
+
+                 {{% thumbnail record.{field} "100x100" as im %}}
+                   <img src="{{{{ im.url }}}}">
+                 {{% endthumbnail %}}
+               '''.format(field = field_name)
     self.template_code = template
-
-class TestTable(tables.Table):
-    name = EditableColumn('name', "Наименование")
-    prod_period = EditableColumn('prod_period', "Время производства")
-
-    class Meta:
-        model = Product
-        attrs = {"class": "paleblue"}
 
 class OrdersTable(tables.Table):
   date = tables.DateColumn('d/m/Y', verbose_name = 'Дата')
@@ -78,6 +90,7 @@ class ArchiveOrdersTable(OrdersTable):
 
   class Meta:
     attrs = {'class': 'paleblue'}
+    empty_text = 'Архивных заказов нет'
     
 class DesignerTable(tables.Table):
   full_name = tables.Column(empty_values=(), verbose_name = 'Дизайнер')
@@ -93,9 +106,31 @@ class DesignerTable(tables.Table):
   class Meta:
     attrs = {'class': 'paleblue'}
 
+  class Meta:
+    attrs = {'class': 'paleblue'}
+
 class SketchesTable(tables.Table):
   sketch_file = tables.FileColumn(verbose_name = 'Имя файла')
   sketch_image = ThumbnailColumn('sketch_file', verbose_name = 'Эскиз', orderable = False)
+
+  class Meta:
+    attrs = {'class': 'paleblue'}
+
+class VisitTable(tables.Table):
+  date = tables.Column(verbose_name = 'Дата')
+  week_day = tables.Column(verbose_name = 'День недели', accessor = 'date.weekday_name')
+  calls = EditableColumn('calls', 'attend' ,verbose_name = 'Звонки', accessor = 'attend.calls')
+  visits = EditableColumn('visits','attend', verbose_name = 'Посещения', accessor = 'attend.visits')
+  orders = tables.Column(verbose_name = 'Заказы', accessor = 'order.product__count')
+  cost = tables.Column(verbose_name = 'Стоимость', accessor = 'order.price__sum')
+  designer = tables.Column(verbose_name = 'Дизайнеры')
+
+  def render_orders(self, value, record):
+    return mark_safe('<a href="%s?date=%s">%s</a>' % (
+			reverse('asuzr.views.visit_view'), 
+			record['date'].strftime('%d.%m.%Y'), 
+			escape(value),
+			))
 
   class Meta:
     attrs = {'class': 'paleblue'}

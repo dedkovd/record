@@ -19,7 +19,7 @@ class Schedule(models.Model):
   designer = models.ForeignKey(User)
   
   def __unicode__(self):
-    return ', '.join((self.date.strftime('%d %b %Y'), self.designer.first_name,))
+    return ' '.join((self.designer.first_name, self.designer.last_name))
 
 #Таблица посещаемости
 class Attendance(models.Model):
