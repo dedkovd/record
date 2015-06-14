@@ -115,6 +115,9 @@ class Sketch(models.Model):
 class Action(models.Model):
   name = models.CharField(max_length=150)	#наименование действия
   
+  def __unicode__(self):
+   return self.name
+  
 #Производственный план
 class ProdPlan(models.Model):
   start_date = models.DateField()	#дата начала
@@ -122,6 +125,9 @@ class ProdPlan(models.Model):
   order = models.ForeignKey(Order)	#id заказа
   executor = models.ForeignKey(User)	#id исполнителя
   action = models.ForeignKey(Action)	#id действия
+  
+  def __unicode__(self):
+   return ', '.join((str(self.start_date), self.order.product.name, self.action.name, self.executor.first_name))
   
 #Протокол доступа
 class AccessProtocol(models.Model):
