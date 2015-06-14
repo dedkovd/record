@@ -163,14 +163,11 @@ def desreport(request):
   sdate = datetime.strptime(start_date, '%d.%m.%y')
   end_date = request.GET.get('edate', date.today().strftime('%d.%m.%y'))
   edate = datetime.strptime(end_date, '%d.%m.%y')
-  des_list = Order.objects.filter(cancelled=False, date__range=(sdate,edate)).values('designer__first_name','designer__last_name').annotate(Sum('price'),Count('designer'))
-  t=loader.get_template('asuzr/desreport.html')
-  c=RequestContext(request,{
-    'des_list' : des_list,
-    'start_date' : start_date,
-    'end_date' : end_date,
-    })
-  return HttpResponse(t.render(c))
+  Table = DesignerTable
+  table = Table(Order.objects.filter(cancelled=False, date__range=(sdate,edate)).values('designer__first_name','designer__last_name').annotate(Sum('price'),Count('designer')))
+  title = 'Отчет по дизайнерам за '+' - '.join((start_date, end_date))
+  RequestConfig(request).configure(table)
+  return render(request, 'asuzr/table.html', {'table': table, 'title': title})
 
 @login_required
 def production_table(request, order_id):
