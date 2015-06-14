@@ -17,3 +17,7 @@ class custom_date(date):
  @property
  def date_dd_mm_yy(self):
     return self.strftime("%d/%m/%Y")
+
+ @property
+ def is_weekend(self):
+    return self.weekday() >= 5

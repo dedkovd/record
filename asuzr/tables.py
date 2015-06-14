@@ -122,7 +122,8 @@ class VisitTable(tables.Table):
   cost = tables.Column(verbose_name = 'Стоимость', accessor = 'order.price__sum')
   designer = tables.Column(verbose_name = 'Дизайнеры')
 
-  def render_orders(self, value, record):
+  def render_orders(self, value, record, column):
+    value = 0 if value == None else value
     return mark_safe('<a href="%s?date=%s">%s</a>' % (
 			reverse('asuzr.views.visit_view'), 
 			record['date'].strftime('%d.%m.%Y'), 
@@ -131,3 +132,4 @@ class VisitTable(tables.Table):
 
   class Meta:
     attrs = {'class': 'paleblue'}
+    template = 'asuzr/table_templ.html'
