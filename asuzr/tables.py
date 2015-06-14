@@ -132,4 +132,4 @@ class VisitTable(tables.Table):
 
   class Meta:
     attrs = {'class': 'paleblue'}
-    template = 'asuzr/table_templ.html'
+    template = 'asuzr/weekend_table.html'
