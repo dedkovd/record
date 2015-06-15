@@ -122,7 +122,7 @@ class VisitTable(tables.Table):
   cost = tables.Column(verbose_name = 'Стоимость', accessor = 'order.price__sum')
   designer = tables.Column(verbose_name = 'Дизайнеры')
  
-  summary = ['Всего','',0,0,0,0,'']
+  summary = ['Итого:','',0,0,0,0,'']
 
   def set_summaries(self, summaries):
     indexes = {'calls': 2, 'visits': 3, 'orders': 4, 'cost': 5}
