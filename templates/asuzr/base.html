@@ -39,7 +39,7 @@
 <div class="breadcrumbs"> 
 {% block menu %}
 <ul id="menu" class="hr">
- <li><a href={% url 'asuzr-main' 1 5 2015 %}>Таблица посещаемости</a></li>
+ <li><a href={% url 'asuzr.views.visit_view' %}>Таблица посещаемости</a></li>
  <li><a href={% url 'asuzr.views.orders' 0 %}>Таблица выхода заказов</a></li>
  <li><a href={% url 'asuzr.views.orders' 1 %}>Архивная таблица</a></li>
  <li><a href={% url 'asuzr.views.desreport' %}>Отчет по дизайнерам</a></li>
