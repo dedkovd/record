@@ -8,6 +8,7 @@ from asuzr.models import Attendance
 from asuzr.models import Order
 from asuzr.models import OrderPlan
 from asuzr.models import Schedule
+from asuzr.models import ProdPlan
 from datetime import datetime, date, timedelta
 import calendar
 from django.db.models import Count, Sum
@@ -70,8 +71,6 @@ def visit_view(request):
       month_days[day]['designer'] = '%s, %s' % (month_days[day]['designer'], designer)
     else:
       month_days[day]['designer'] = designer
-
-  print month_days 
  
   table = VisitTable(month_days.values())
   RequestConfig(request, paginate={'per_page': 32}).configure(table)
@@ -188,3 +187,23 @@ def production_table(request, order_id):
     'cost_items' : cost_items,
     })
   return HttpResponse(t.render(c))
+
+@login_required
+def prod_plan_view(request):
+  curr_date = datetime.strptime(request.GET.get('date', date.today().strftime('%d.%m.%Y')), '%d.%m.%Y')
+  y,m = curr_date.year, curr_date.month
+  wd = curr_date.weekday()
+  sdate = curr_date - timedelta(days = wd)
+  edate = curr_date + timedelta(days = 6-wd)
+  
+  week_days = {i: {'date': custom_date(y,m,sdate.day+i)} for i in range(0,7)}
+  
+  prodplan_list = ProdPlan.objects.filter(start_date__range = (sdate,edate))
+  
+  for prodplan in prodplan_list:
+    week_days[prodplan.start_date.weekday()]['prodplan'] = prodplan
+  
+  table = ProdPlanTable(week_days.values())
+  title = u'Производственный план на %s - %s' % (sdate.strftime('%d.%m.%Y'), edate.strftime('%d.%m.%Y'))
+  RequestConfig(request).configure(table)
+  return render(request, 'asuzr/table.html', {'table': table, 'title': title})
