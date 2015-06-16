@@ -7,6 +7,7 @@
   <script src="{{ STATIC_URL }}admin/js/jquery.min.js" type="text/javascript"></script>
   {% inplace_static %}
   <link rel="stylesheet" href="{{ STATIC_URL }}django_tables2/themes/paleblue/css/screen.css" />
+  <link rel="stylesheet" href="{{ STATIC_URL }}admin/css/base.css" />
   <style>
     #menu {
       margin: 0; /* Обнуляем значение отступов */
@@ -16,6 +17,7 @@
       display: inline; /* Отображать как строчный элемент */
       margin-right: 5px; /* Отступ слева */
       border: 1px solid #000; /* Рамка вокруг текста */
+      border-radius: 4px;
       padding: 3px; /* Поля вокруг текста */
     }
     #user {
@@ -25,9 +27,13 @@
     #menu, #user {
       display: inline;
     }
+    table.paleblue tr.weekend {
+      background-color: #FFE4E1
+    }
  </style>
 </head>
-<body> 
+<body>
+<div class="breadcrumbs"> 
 {% block menu %}
 <ul id="menu" class="hr">
  <li><a href={% url 'asuzr-main' %}>Таблица посещаемости</a></li>
@@ -38,17 +44,22 @@
  {% if request.user.is_staff %}<li><a href={% url 'admin:index' %}>Администрирование</a></li>{% endif %}
 </ul>
 <div id="user">
-{% if request.user.is_authenticated %} Добро пожаловать, {{ request.user.first_name }}
-{% else %}<a href="{% url 'django.contrib.auth.views.login' %}">Вход</a>{% endif %}
-<br><a href="{% url 'django.contrib.auth.views.logout' %}">Выход</a>
+{% if request.user.is_authenticated %} 
+Добро пожаловать, {{ request.user.first_name }}
+(<a href="{% url 'django.contrib.auth.views.logout' %}">Выход</a>)
+{% else %}
+(<a href="{% url 'django.contrib.auth.views.login' %}">Вход</a>){% endif %}
+</div>
 </div>
 {% endblock %}
+
+<div id='content'>
 <H1>{% block title %}{{ title }}{% endblock %}</H1> 
 
 {% block page %}
 Тело страницы
 {% endblock %}
-
+</div>
 {% block footer %}
 <hr>
 {% endblock %}

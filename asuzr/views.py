@@ -53,12 +53,16 @@ def visit_view(request):
   edate = date(y,m,day_in_month)
 
   attend_list = Attendance.objects.filter(date__range = (sdate,edate))
+  attend_sum = attend_list.aggregate(Sum('calls'), Sum('visits'))
   for attend in attend_list:
     month_days[attend.date.day]['attend'] = attend
 
   order_list = Order.objects.filter(date__range = (sdate,edate))
+  order_sum = order_list.aggregate(Count('product'), Sum('price'))
   order_list = order_list.values('date')
   order_list = order_list.annotate(Count('product'), Sum('price'))
+
+  print order_sum
 
   for order in order_list:
     month_days[order['date'].day]['order'] = order
@@ -71,9 +75,15 @@ def visit_view(request):
       month_days[day]['designer'] = '%s, %s' % (month_days[day]['designer'], designer)
     else:
       month_days[day]['designer'] = designer
- 
+      
   table = VisitTable(month_days.values())
   RequestConfig(request, paginate={'per_page': 32}).configure(table)
+  table.set_summaries({
+                        'calls': attend_sum['calls__sum'],
+                        'visits': attend_sum['visits__sum'],
+                        'orders': order_sum['product__count'],
+                        'cost': order_sum['price__sum'],
+                      })
   title = 'Таблица посещаемости на %s г.' % curr_date.strftime('%B %Y')
   return render(request, 'asuzr/table.html', {'table': table, 'title': title})
 
