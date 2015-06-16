@@ -119,10 +119,9 @@ class VisitTable(tables.Table):
   designer = tables.Column(verbose_name = 'Дизайнеры')
  
   summary = ['Всего','',0,0,0,0,'']
-
   def set_summaries(self, summaries):
-    indexes = {'calls': 2, 'visits': 3, 'orders': 4, 'cost': 5}
-    for s in summaries:
+   indexes = {'calls': 2, 'visits': 3, 'orders': 4, 'cost': 5}
+   for s in summaries:
       idx = indexes[s]
       self.summary[idx] = summaries[s]
  
@@ -141,6 +140,12 @@ class VisitTable(tables.Table):
 
 class DayOrdersTable(OrdersTable):
   designer = tables.Column(verbose_name = 'Дизайнер')
+
+  summary = ['Всего', 0, '', '', '',]
+
+  def set_summary(self, price):
+    self.summary[1] = price
+
   class Meta:
     attrs = {'class': 'paleblue'}
     exclude = ('date',
@@ -159,3 +164,4 @@ class DayOrdersTable(OrdersTable):
                 'designer', 
                 'deadline',
                )
+    template = 'asuzr/totals_table.html'

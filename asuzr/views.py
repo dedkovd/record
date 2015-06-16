@@ -82,17 +82,25 @@ def get_attendance_table(year, month, prefix):
  
   return table
 
+def get_day_orders_table(date, prefix):
+  orders = Order.objects.filter(date = date)
+  orders_price = orders.aggregate(Sum('price'))
+  table = DayOrdersTable(orders, prefix = prefix)
+  table.verbose_name = 'Заказы на %s' % date.strftime('%d %B %Y г')
+  table.set_summary(orders_price['price__sum'])
+
+  return table 
+
 @login_required
 def visit_view(request):
   curr_date = datetime.strptime(request.GET.get('date', date.today().strftime('%d.%m.%Y')), '%d.%m.%Y')
   attendance_table = get_attendance_table(curr_date.year, curr_date.month, 'attendance-')
   RequestConfig(request, paginate={'per_page': 32}).configure(attendance_table)
 
-  orders_table = DayOrdersTable(Order.objects.filter(date = curr_date))
-  orders_table.verbose_name = 'Заказы на %s г' % curr_date.strftime('%d %B %Y')
+  orders_table = get_day_orders_table(curr_date, 'orders-')
   RequestConfig(request).configure(orders_table)
 
-  title = 'Таблица посещаемости на %s г.' % curr_date.strftime('%B %Y')
+  title = 'Таблица посещаемости на %s' % curr_date.strftime('%B %Y г')
   return render(request, 'asuzr/table3.html', {
                                                'table1': attendance_table, 
                                                'table2': orders_table,
