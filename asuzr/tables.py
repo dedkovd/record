@@ -97,6 +97,9 @@ class DesignerTable(tables.Table):
   
   def render_sum_price(self, value):
     return '%0.1f' % value
+  
+  class Meta:
+    attrs = {'class': 'paleblue'}
 
   class Meta:
     attrs = {'class': 'paleblue'}
@@ -168,3 +171,13 @@ class DayOrdersTable(OrdersTable):
                 'deadline',
                )
     template = 'asuzr/totals_table.html'
+    
+class ProdPlanTable(tables.Table):
+  date = tables.Column(verbose_name = 'Дата')
+  week_day = tables.Column(verbose_name = 'День недели', accessor = 'date.weekday_name')
+  executor = EditableColumn('executor', 'prodplan',verbose_name = 'Исполнитель')
+  order = EditableColumn('order', 'prodplan', verbose_name = 'Заказ')
+  action = EditableColumn('action', 'prodplan', verbose_name = 'Действие')
+
+  class Meta:
+    attrs = {'class': 'paleblue'}

@@ -17,7 +17,7 @@
 	  <TD>{{ attend.date.weekday_name}}</TD>
 	  <TD>{% if attend.attend %}{% inplace_edit "attend.attend.calls" %}{% endif %}</TD>
 	  <TD>{% if attend.attend %}{% inplace_edit "attend.attend.visits" %}{% endif %}</TD>
-	  <TD><a href="{% url 'asuzr-main' attend.date.day attend.date.month attend.date.year %}">{{ attend.orders_count}}</a></TD>
+	  <TD><a href="{% url 'asuzr-main' %}{{attend.date.day}}/{{attend.date.month}}/{{attend.date.year}}">{{ attend.orders_count}}</a></TD>
 	  <TD>{{ attend.orders_price}}</TD>
 	  <TD>{{ attend.designers}}</TD>
         </TR>

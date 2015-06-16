@@ -3,7 +3,7 @@
 
 <html>
 <head>
-  <title>Автоматическая система учета заказов студии мебели Рекорд</title> 
+  <title>Автоматизированная система учета заказов студии мебели Рекорд</title> 
   <script src="{{ STATIC_URL }}admin/js/jquery.min.js" type="text/javascript"></script>
   {% inplace_static %}
   <link rel="stylesheet" href="{{ STATIC_URL }}django_tables2/themes/paleblue/css/screen.css" />
@@ -44,6 +44,7 @@
  <li><a href={% url 'asuzr.views.orders' 0 %}>Таблица выхода заказов</a></li>
  <li><a href={% url 'asuzr.views.orders' 1 %}>Архивная таблица</a></li>
  <li><a href={% url 'asuzr.views.desreport' %}>Отчет по дизайнерам</a></li>
+ <li><a href={% url 'asuzr.views.prod_plan_view' %}>Производственный план</a></li>
  {% if request.user.is_staff %}<li><a href={% url 'admin:index' %}>Администрирование</a></li>{% endif %}
 </ul>
 <div id="user">
