@@ -58,10 +58,10 @@ class OrdersTable(tables.Table):
   designer = tables.Column(visible = False) # Почему-то дизайнер в exclude вызывает ошибку, м.б. из-за FK. Разобраться
 
   def render_price(self, value):
-    return '%0.1f' % value
+    return '%0.2f' % value
 
   def render_ostatok(self, value):
-    return '%0.1f' % value
+    return '%0.2f' % value
 
   class Meta:
     model = Order
@@ -145,6 +145,9 @@ class DayOrdersTable(OrdersTable):
 
   def set_summary(self, price):
     self.summary[1] = price
+
+  def render_designer(self, value):
+    return ' '.join((value.first_name, value.last_name))
 
   class Meta:
     attrs = {'class': 'paleblue'}
