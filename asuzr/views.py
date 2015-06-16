@@ -73,7 +73,7 @@ def get_attendance_table(year, month, prefix):
 
   month_plan = OrderPlan.objects.filter(date = sdate).first()
   month_plan = 0 if month_plan == None else month_plan.plan
-  month_balance = month_plan - order_sum['price__sum']
+  month_balance = month_plan - (order_sum['price__sum'] or 0)
 
   additional_info = {'title': 'Справочно', 
                      'rows': [
@@ -85,10 +85,10 @@ def get_attendance_table(year, month, prefix):
   table = VisitTable(month_days.values(), prefix = prefix)
   table.verbose_name = 'Сводная информация'
   table.set_summaries({
-                        'calls': attend_sum['calls__sum'],
-                        'visits': attend_sum['visits__sum'],
-                        'orders': order_sum['product__count'],
-                        'cost': order_sum['price__sum'],
+                        'calls': attend_sum['calls__sum'] or 0,
+                        'visits': attend_sum['visits__sum'] or 0,
+                        'orders': order_sum['product__count'] or 0,
+                        'cost': order_sum['price__sum'] or 0,
                       })
  
   return table, additional_info
@@ -98,7 +98,7 @@ def get_day_orders_table(date, prefix):
   orders_price = orders.aggregate(Sum('price'))
   table = DayOrdersTable(orders, prefix = prefix)
   table.verbose_name = 'Заказы на %s' % date.strftime('%d %B %Y г')
-  table.set_summary(orders_price['price__sum'])
+  table.set_summary(orders_price['price__sum'] or 0)
 
   return table 
 
