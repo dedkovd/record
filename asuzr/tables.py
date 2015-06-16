@@ -17,12 +17,12 @@ class EditableColumn(tables.TemplateColumn):
     main_part = ''
     if object_name == '':
        main_part = '''
-                    {{% inplace_edit "record.{field}" auto_height = 1 %}}
+                    {{% inplace_edit "record.{field}" auto_height = 1, auto_width = 1 %}}
                    '''
     else:
        main_part = '''
                     {{% if record.{object_name} %}}
-                      {{% inplace_edit "record.{object_name}.{field}" auto_height = 1 %}}
+                      {{% inplace_edit "record.{object_name}.{field}" auto_height = 1, auto_width = 1 %}}
                     {{% endif %}}
                    '''
     template = template.format(main_part = main_part)   
