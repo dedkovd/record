@@ -141,7 +141,7 @@ class VisitTable(tables.Table):
 class DayOrdersTable(OrdersTable):
   designer = tables.Column(verbose_name = 'Дизайнер')
 
-  summary = ['Всего', 0, '', '', '',]
+  summary = ['Итого:', 0, '', '', '',]
 
   def set_summary(self, price):
     self.summary[1] = price
