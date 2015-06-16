@@ -42,15 +42,13 @@ def get_orders_by_date(dt):
   order_list = Order.objects.filter(date=dt).order_by('id')
   return order_list
 
-@login_required
-def visit_view(request):
-  curr_date = datetime.strptime(request.GET.get('date', date.today().strftime('%d.%m.%Y')), '%d.%m.%Y')
-  y,m = curr_date.year, curr_date.month
-  day_in_month = calendar.monthrange(y,m)[1]
-  month_days = {i+1: {'date': custom_date(y,m,i+1)} for i in range(day_in_month)}
-  sdate = date(y,m,1)
-  edate = date(y,m,day_in_month)
+def get_attendance_table(year, month, prefix):
+  day_in_month = calendar.monthrange(year,month)[1]
+  sdate = date(year,month,1)
+  edate = date(year,month,day_in_month)
 
+  month_days = {i+1: {'date': custom_date(year,month,i+1)} for i in range(day_in_month)}
+  
   attend_list = Attendance.objects.filter(date__range = (sdate,edate))
   attend_sum = attend_list.aggregate(Sum('calls'), Sum('visits'))
   for attend in attend_list:
@@ -60,8 +58,6 @@ def visit_view(request):
   order_sum = order_list.aggregate(Count('product'), Sum('price'))
   order_list = order_list.values('date')
   order_list = order_list.annotate(Count('product'), Sum('price'))
-
-  print order_sum
 
   for order in order_list:
     month_days[order['date'].day]['order'] = order
@@ -75,16 +71,52 @@ def visit_view(request):
     else:
       month_days[day]['designer'] = designer
 
-  table = VisitTable(month_days.values())
-  RequestConfig(request, paginate={'per_page': 32}).configure(table)
+  month_plan = OrderPlan.objects.filter(date = sdate).first()
+  month_plan = 0 if month_plan == None else month_plan.plan
+  month_balance = month_plan - (order_sum['price__sum'] or 0)
+
+  additional_info = {'title': 'Справочно', 
+                     'rows': [
+                              {'title': 'ПЛАН', 'value': month_plan},
+                              {'title': 'Осталось до выполнения', 'value': month_balance},
+                             ]
+                    }
+
+  table = VisitTable(month_days.values(), prefix = prefix)
+  table.verbose_name = 'Сводная информация'
   table.set_summaries({
-                        'calls': attend_sum['calls__sum'],
-                        'visits': attend_sum['visits__sum'],
-                        'orders': order_sum['product__count'],
-                        'cost': order_sum['price__sum'],
+                        'calls': attend_sum['calls__sum'] or 0,
+                        'visits': attend_sum['visits__sum'] or 0,
+                        'orders': order_sum['product__count'] or 0,
+                        'cost': order_sum['price__sum'] or 0,
                       })
-  title = 'Таблица посещаемости на %s г.' % curr_date.strftime('%B %Y')
-  return render(request, 'asuzr/table.html', {'table': table, 'title': title})
+ 
+  return table, additional_info
+
+def get_day_orders_table(date, prefix):
+  orders = Order.objects.filter(date = date)
+  orders_price = orders.aggregate(Sum('price'))
+  table = DayOrdersTable(orders, prefix = prefix)
+  table.verbose_name = 'Заказы на %s' % date.strftime('%d %B %Y г')
+  table.set_summary(orders_price['price__sum'] or 0)
+
+  return table 
+
+@login_required
+def visit_view(request):
+  curr_date = datetime.strptime(request.GET.get('date', date.today().strftime('%d.%m.%Y')), '%d.%m.%Y')
+  attendance_table, add_info = get_attendance_table(curr_date.year, curr_date.month, 'attendance-')
+  RequestConfig(request, paginate={'per_page': 32}).configure(attendance_table)
+
+  orders_table = get_day_orders_table(curr_date, 'orders-')
+  RequestConfig(request).configure(orders_table)
+
+  title = 'Таблица посещаемости на %s' % curr_date.strftime('%B %Y г')
+  return render(request, 'asuzr/table2.html', {
+                                               'table1': attendance_table, 
+                                               'table2': orders_table,
+                                               'additional_info': add_info,
+                                               'title': title})
 
 @login_required 
 def main(request, day, month, year):

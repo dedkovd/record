@@ -17,12 +17,12 @@ class EditableColumn(tables.TemplateColumn):
     main_part = ''
     if object_name == '':
        main_part = '''
-                    {{% inplace_edit "record.{field}" auto_height = 1 %}}
+                    {{% inplace_edit "record.{field}" auto_height = 1, auto_width = 1 %}}
                    '''
     else:
        main_part = '''
                     {{% if record.{object_name} %}}
-                      {{% inplace_edit "record.{object_name}.{field}" auto_height = 1 %}}
+                      {{% inplace_edit "record.{object_name}.{field}" auto_height = 1, auto_width = 1 %}}
                     {{% endif %}}
                    '''
     template = template.format(main_part = main_part)   
@@ -43,7 +43,7 @@ class ThumbnailColumn(tables.TemplateColumn):
 
 class OrdersTable(tables.Table):
   date = tables.DateColumn('d/m/Y', verbose_name = 'Дата')
-  deadline = tables.DateColumn('d/m/Y/', verbose_name = 'Срок сдачи')
+  deadline = tables.DateColumn('d/m/Y', verbose_name = 'Срок сдачи')
   product = tables.Column(verbose_name = 'Наименование') 
   delivery = EditableColumn('delivery', verbose_name = 'Доставка')
   lifting = EditableColumn('lifting', verbose_name = 'Подъем')
@@ -55,18 +55,12 @@ class OrdersTable(tables.Table):
   sketch = tables.LinkColumn('asuzr.views.sketches', verbose_name = 'Эскизы', args=[tables.utils.A('pk')])
   executor = EditableColumn('executor', verbose_name = 'Исполнитель')
   is_done = EditableColumn('is_done', verbose_name = 'Сдан')
-  id = tables.Column(visible = False)
-  designer = tables.Column(visible = False)
-  calls = tables.Column(visible = False)
-  contact = tables.Column(visible = False)
-  phone_num = tables.Column(visible = False)
-  cancelled = tables.Column(visible = False)
 
   def render_price(self, value):
-    return '%0.1f' % value
+    return '%0.2f' % value
 
   def render_ostatok(self, value):
-    return '%0.1f' % value
+    return '%0.2f' % value
 
   class Meta:
     model = Order
@@ -84,6 +78,7 @@ class OrdersTable(tables.Table):
                 'sketch',
                 'executor',
                 'is_done',)
+    exclude = ('id', 'calls', 'contact', 'phone_num', 'cancelled', 'designer', )
 
 class ArchiveOrdersTable(OrdersTable):
   calls = EditableColumn('calls', verbose_name = 'Обзвон')
@@ -125,8 +120,8 @@ class VisitTable(tables.Table):
   summary = ['Итого:','',0,0,0,0,'']
 
   def set_summaries(self, summaries):
-    indexes = {'calls': 2, 'visits': 3, 'orders': 4, 'cost': 5}
-    for s in summaries:
+   indexes = {'calls': 2, 'visits': 3, 'orders': 4, 'cost': 5}
+   for s in summaries:
       idx = indexes[s]
       self.summary[idx] = summaries[s]
  
@@ -142,3 +137,34 @@ class VisitTable(tables.Table):
     attrs = {'class': 'paleblue'}
     orderable = False
     template = 'asuzr/weekend_table.html'
+
+class DayOrdersTable(OrdersTable):
+  designer = tables.Column(verbose_name = 'Дизайнер')
+
+  summary = ['Всего', 0, '', '', '',]
+
+  def set_summary(self, price):
+    self.summary[1] = price
+
+  def render_designer(self, value):
+    return ' '.join((value.first_name, value.last_name))
+
+  class Meta:
+    attrs = {'class': 'paleblue'}
+    exclude = ('date',
+               'delivery', 
+               'lifting', 
+               'paid', 
+               'ostatok', 
+               'approved', 
+               'sketch', 
+               'executor', 
+               'is_done',
+              )
+    sequence = ('product', 
+                'price', 
+                'address', 
+                'designer', 
+                'deadline',
+               )
+    template = 'asuzr/totals_table.html'

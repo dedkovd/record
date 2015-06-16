@@ -1,0 +1,15 @@
+{% extends "django_tables2/table.html" %}
+{% load django_tables2 %}
+{% load i18n %}
+{% block table.tfoot %}
+   <tfoot>
+   {% if table.summary %}
+      <tr>
+      {% for summary in table.summary %}
+       <td> {{ summary }} </td>
+      {% endfor %}
+      </tr>
+   {% endif %}
+   </tfoot>
+{% endblock table.tfoot %}
+
