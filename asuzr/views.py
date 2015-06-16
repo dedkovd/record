@@ -71,6 +71,17 @@ def get_attendance_table(year, month, prefix):
     else:
       month_days[day]['designer'] = designer
 
+  month_plan = OrderPlan.objects.filter(date = sdate).first()
+  month_plan = 0 if month_plan == None else month_plan.plan
+  month_balance = month_plan - order_sum['price__sum']
+
+  additional_info = {'title': 'Справочно', 
+                     'rows': [
+                              {'title': 'ПЛАН', 'value': month_plan},
+                              {'title': 'Осталось до выполнения', 'value': month_balance},
+                             ]
+                    }
+
   table = VisitTable(month_days.values(), prefix = prefix)
   table.verbose_name = 'Сводная информация'
   table.set_summaries({
@@ -80,7 +91,7 @@ def get_attendance_table(year, month, prefix):
                         'cost': order_sum['price__sum'],
                       })
  
-  return table
+  return table, additional_info
 
 def get_day_orders_table(date, prefix):
   orders = Order.objects.filter(date = date)
@@ -94,17 +105,17 @@ def get_day_orders_table(date, prefix):
 @login_required
 def visit_view(request):
   curr_date = datetime.strptime(request.GET.get('date', date.today().strftime('%d.%m.%Y')), '%d.%m.%Y')
-  attendance_table = get_attendance_table(curr_date.year, curr_date.month, 'attendance-')
+  attendance_table, add_info = get_attendance_table(curr_date.year, curr_date.month, 'attendance-')
   RequestConfig(request, paginate={'per_page': 32}).configure(attendance_table)
 
   orders_table = get_day_orders_table(curr_date, 'orders-')
   RequestConfig(request).configure(orders_table)
 
   title = 'Таблица посещаемости на %s' % curr_date.strftime('%B %Y г')
-  return render(request, 'asuzr/table3.html', {
+  return render(request, 'asuzr/table2.html', {
                                                'table1': attendance_table, 
                                                'table2': orders_table,
-                                               'table3': attendance_table,
+                                               'additional_info': add_info,
                                                'title': title})
 
 @login_required 
