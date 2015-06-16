@@ -55,7 +55,6 @@ class OrdersTable(tables.Table):
   sketch = tables.LinkColumn('asuzr.views.sketches', verbose_name = 'Эскизы', args=[tables.utils.A('pk')])
   executor = EditableColumn('executor', verbose_name = 'Исполнитель')
   is_done = EditableColumn('is_done', verbose_name = 'Сдан')
-  designer = tables.Column(visible = False) # Почему-то дизайнер в exclude вызывает ошибку, м.б. из-за FK. Разобраться
 
   def render_price(self, value):
     return '%0.2f' % value
@@ -79,7 +78,7 @@ class OrdersTable(tables.Table):
                 'sketch',
                 'executor',
                 'is_done',)
-    exclude = ('id', 'calls', 'contact', 'phone_num', 'cancelled',)
+    exclude = ('id', 'calls', 'contact', 'phone_num', 'cancelled', 'designer', )
 
 class ArchiveOrdersTable(OrdersTable):
   calls = EditableColumn('calls', verbose_name = 'Обзвон')
