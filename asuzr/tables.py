@@ -43,7 +43,7 @@ class ThumbnailColumn(tables.TemplateColumn):
 
 class OrdersTable(tables.Table):
   date = tables.DateColumn('d/m/Y', verbose_name = 'Дата')
-  deadline = tables.DateColumn('d/m/Y/', verbose_name = 'Срок сдачи')
+  deadline = tables.DateColumn('d/m/Y', verbose_name = 'Срок сдачи')
   product = tables.Column(verbose_name = 'Наименование') 
   delivery = EditableColumn('delivery', verbose_name = 'Доставка')
   lifting = EditableColumn('lifting', verbose_name = 'Подъем')
@@ -55,12 +55,7 @@ class OrdersTable(tables.Table):
   sketch = tables.LinkColumn('asuzr.views.sketches', verbose_name = 'Эскизы', args=[tables.utils.A('pk')])
   executor = EditableColumn('executor', verbose_name = 'Исполнитель')
   is_done = EditableColumn('is_done', verbose_name = 'Сдан')
-  id = tables.Column(visible = False)
-  designer = tables.Column(visible = False)
-  calls = tables.Column(visible = False)
-  contact = tables.Column(visible = False)
-  phone_num = tables.Column(visible = False)
-  cancelled = tables.Column(visible = False)
+  designer = tables.Column(visible = False) # Почему-то дизайнер в exclude вызывает ошибку, м.б. из-за FK. Разобраться
 
   def render_price(self, value):
     return '%0.1f' % value
@@ -84,6 +79,7 @@ class OrdersTable(tables.Table):
                 'sketch',
                 'executor',
                 'is_done',)
+    exclude = ('id', 'calls', 'contact', 'phone_num', 'cancelled',)
 
 class ArchiveOrdersTable(OrdersTable):
   calls = EditableColumn('calls', verbose_name = 'Обзвон')
@@ -142,3 +138,24 @@ class VisitTable(tables.Table):
     attrs = {'class': 'paleblue'}
     orderable = False
     template = 'asuzr/weekend_table.html'
+
+class DayOrdersTable(OrdersTable):
+  designer = tables.Column(verbose_name = 'Дизайнер')
+  class Meta:
+    attrs = {'class': 'paleblue'}
+    exclude = ('date',
+               'delivery', 
+               'lifting', 
+               'paid', 
+               'ostatok', 
+               'approved', 
+               'sketch', 
+               'executor', 
+               'is_done',
+              )
+    sequence = ('product', 
+                'price', 
+                'address', 
+                'designer', 
+                'deadline',
+               )

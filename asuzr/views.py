@@ -87,10 +87,15 @@ def visit_view(request):
   curr_date = datetime.strptime(request.GET.get('date', date.today().strftime('%d.%m.%Y')), '%d.%m.%Y')
   attendance_table = get_attendance_table(curr_date.year, curr_date.month, 'attendance-')
   RequestConfig(request, paginate={'per_page': 32}).configure(attendance_table)
+
+  orders_table = DayOrdersTable(Order.objects.filter(date = curr_date))
+  orders_table.verbose_name = 'Заказы на %s г' % curr_date.strftime('%d %B %Y')
+  RequestConfig(request).configure(orders_table)
+
   title = 'Таблица посещаемости на %s г.' % curr_date.strftime('%B %Y')
   return render(request, 'asuzr/table3.html', {
                                                'table1': attendance_table, 
-                                               'table2': attendance_table,
+                                               'table2': orders_table,
                                                'table3': attendance_table,
                                                'title': title})
 
