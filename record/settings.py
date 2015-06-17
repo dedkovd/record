@@ -92,3 +92,5 @@ TEMPLATE_CONTEXT_PROCESSORS += ('django.core.context_processors.request',)
 MEDIA_ROOT = 'media/'
 
 MEDIA_URL = 'http://127.0.0.1:8000/media/'
+
+THUMBNAIL_ENGINE = 'sorl.thumbnail.engines.convert_engine.Engine'
