@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.template import RequestContext, Context, loader
 from asuzr.models import Product
@@ -196,6 +196,13 @@ def sketches(request, order_id):
   table = SketchesTable(Sketch.objects.filter(order = curr_order))
   RequestConfig(request).configure(table)
   return render(request, 'asuzr/table.html', {'table': table, 'title': 'Эскизы заказа %s' % curr_order})
+
+def delete_sketch(request):
+  pk = request.GET.get('pk', -1)
+  sketch = get_object_or_404(Sketch, pk = pk)
+  order_id = sketch.order.pk
+  sketch.delete()
+  return redirect(sketches, order_id = order_id)
 
 @login_required 
 def orders(request, archive):

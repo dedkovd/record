@@ -107,6 +107,11 @@ class DesignerTable(tables.Table):
 class SketchesTable(tables.Table):
   sketch_file = tables.FileColumn(verbose_name = 'Имя файла')
   sketch_image = ThumbnailColumn('sketch_file', verbose_name = 'Эскиз', orderable = False)
+  delete_sketch = tables.Column(verbose_name = 'Удалить', orderable = False, empty_values = ())
+
+  def render_delete_sketch(self, record):
+    return mark_safe(u'<a href="%s?pk=%s">Удалить</a>' % 
+                           (reverse('asuzr.views.delete_sketch'), escape(record.id)))
 
   class Meta:
     attrs = {'class': 'paleblue'}
