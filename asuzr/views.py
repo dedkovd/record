@@ -3,18 +3,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.template import RequestContext, Context, loader
-from asuzr.models import Product
-from asuzr.models import Attendance
-from asuzr.models import Order
-from asuzr.models import OrderPlan
-from asuzr.models import Schedule
-from asuzr.models import ProdPlan
+from asuzr.models import *
 from datetime import datetime, date, timedelta
 import calendar
 from django.db.models import Count, Sum
 from asuzr.common import custom_date
 from django.contrib.auth.decorators import login_required
-from tables import *
+from asuzr.tables import *
 from django_tables2 import RequestConfig
 
 @login_required 
@@ -193,9 +188,19 @@ def main(request, day, month, year):
 @login_required
 def sketches(request, order_id):
   curr_order = Order.objects.get(pk = order_id)
+  if request.method == 'POST':
+    if 'sketch_file' in request.FILES:
+      for f in request.FILES.getlist('sketch_file'):
+        instance = Sketch(sketch_file = f, order = curr_order)
+        instance.save()
+        return redirect(sketches, order_id = order_id)
+
   table = SketchesTable(Sketch.objects.filter(order = curr_order))
   RequestConfig(request).configure(table)
-  return render(request, 'asuzr/table.html', {'table': table, 'title': 'Эскизы заказа %s' % curr_order})
+  return render(request, 'asuzr/sketches.html', { 
+                                                 'order_id': order_id, 
+                                                 'table': table, 
+                                                 'title': 'Эскизы заказа %s' % curr_order})
 
 def delete_sketch(request):
   pk = request.GET.get('pk', -1)
@@ -257,3 +262,4 @@ def prod_plan_view(request):
   title = u'Производственный план на %s - %s' % (sdate.strftime('%d.%m.%Y'), edate.strftime('%d.%m.%Y'))
   RequestConfig(request).configure(table)
   return render(request, 'asuzr/table.html', {'table': table, 'title': title})
+

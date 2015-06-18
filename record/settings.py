@@ -87,7 +87,9 @@ STATIC_URL = '/static/'
 
 TEMPLATE_DIRS = ('templates/')
 
-TEMPLATE_CONTEXT_PROCESSORS += ('django.core.context_processors.request',)
+TEMPLATE_CONTEXT_PROCESSORS += ('django.core.context_processors.request',
+                                'django.core.context_processors.csrf',
+                               )
 
 MEDIA_ROOT = 'media/'
 

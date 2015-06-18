@@ -3,6 +3,10 @@
 {% load render_table from django_tables2 %}
 
 {% block page %}
-  {% render_table table %}
+  {% block table %}
+    {% render_table table %}
+  {% endblock %}
+  {% block additional %}
+  {% endblock %}
 {% endblock %}
 
