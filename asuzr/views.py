@@ -190,10 +190,11 @@ def sketches(request, order_id):
   curr_order = Order.objects.get(pk = order_id)
   if request.method == 'POST':
     if 'sketch_file' in request.FILES:
-      for f in request.FILES.getlist('sketch_file'):
+      files = request.FILES.getlist('sketch_file')
+      for f in files:
         instance = Sketch(sketch_file = f, order = curr_order)
         instance.save()
-        return redirect(sketches, order_id = order_id)
+      return redirect(sketches, order_id = order_id)
 
   table = SketchesTable(Sketch.objects.filter(order = curr_order))
   RequestConfig(request).configure(table)
