@@ -35,8 +35,9 @@ class ColoredEditableColumn(EditableColumn):
     self.condition_field = condition_field
 
   def render(self, record, **kwargs):
+    print eval('record.%s' % self.condition_field)
     if self.condition_field != None and eval('record.%s' % self.condition_field):
-      self.attrs = {'th': {'bgcolor': '#FFE4E1'}}
+      self.attrs = {'td': {'bgcolor': '#FFE4E1'}}
     else:
       self.attrs = {}
      
