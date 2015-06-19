@@ -64,6 +64,7 @@ class OrdersTable(tables.Table):
 
   class Meta:
     model = Order
+    empty_text = 'Незавершенных заказов нет'
     attrs = {'class': 'paleblue'}
     sequence = ('date', 
                 'deadline', 
@@ -99,9 +100,7 @@ class DesignerTable(tables.Table):
     return '%0.1f' % value
   
   class Meta:
-    attrs = {'class': 'paleblue'}
-
-  class Meta:
+    empty_text = 'Заказов за этот период не было'
     attrs = {'class': 'paleblue'}
 
 class SketchesTable(tables.Table):
@@ -114,6 +113,7 @@ class SketchesTable(tables.Table):
                            (reverse('asuzr.views.delete_sketch'), escape(record.id)))
 
   class Meta:
+    empty_text = 'Эскизов для этого заказа пока нет'
     attrs = {'class': 'paleblue'}
 
 class VisitTable(tables.Table):
@@ -158,6 +158,7 @@ class DayOrdersTable(OrdersTable):
     return ' '.join((value.first_name, value.last_name))
 
   class Meta:
+    empty_text = 'Заказов для этого дня нет'
     attrs = {'class': 'paleblue'}
     exclude = ('date',
                'delivery', 
