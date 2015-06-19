@@ -53,6 +53,15 @@
 </div>
 {% endblock %}
 
+
+{% block controls %}
+{% if form %}
+<form action="/visits/" method="get">
+    {{ form }}
+    <input type="submit" value="OK" />
+</form>
+{% endif %}
+{% endblock %}
 <div id='content'>
 <H1>{% block title %}{{ title }}{% endblock %}</H1> 
 

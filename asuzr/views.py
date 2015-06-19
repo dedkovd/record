@@ -1,7 +1,7 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext, Context, loader
 from asuzr.models import Product
 from asuzr.models import Attendance
@@ -15,6 +15,7 @@ from django.db.models import Count, Sum
 from asuzr.common import custom_date
 from django.contrib.auth.decorators import login_required
 from tables import *
+from forms import *
 from django_tables2 import RequestConfig
 
 @login_required 
@@ -46,6 +47,8 @@ def get_orders_by_date(dt):
 @login_required
 def visit_view(request):
   curr_date = datetime.strptime(request.GET.get('date', date.today().strftime('%d.%m.%Y')), '%d.%m.%Y')
+  form = DateForm(request.GET, initial = {'date': curr_date})
+  
   y,m = curr_date.year, curr_date.month
   day_in_month = calendar.monthrange(y,m)[1]
   month_days = {i+1: {'date': custom_date(y,m,i+1)} for i in range(day_in_month)}
@@ -61,8 +64,6 @@ def visit_view(request):
   order_sum = order_list.aggregate(Count('product'), Sum('price'))
   order_list = order_list.values('date')
   order_list = order_list.annotate(Count('product'), Sum('price'))
-
-  print order_sum
 
   for order in order_list:
     month_days[order['date'].day]['order'] = order
@@ -85,7 +86,15 @@ def visit_view(request):
                         'cost': order_sum['price__sum'],
                       })
   title = 'Таблица посещаемости на %s г.' % curr_date.strftime('%B %Y')
-  return render(request, 'asuzr/table.html', {'table': table, 'title': title})
+  
+  if request.method == 'POST':
+    form = DateForm(request.POST)
+    if form.is_valid():
+      print form.cleaned_data
+  else:
+    form = DateForm()
+    
+  return render(request, 'asuzr/table.html', {'table': table, 'title': title, 'form': form})
 
 @login_required 
 def main(request, day, month, year):
@@ -217,3 +226,12 @@ def prod_plan_view(request):
   title = u'Производственный план на %s - %s' % (sdate.strftime('%d.%m.%Y'), edate.strftime('%d.%m.%Y'))
   RequestConfig(request).configure(table)
   return render(request, 'asuzr/table.html', {'table': table, 'title': title})
+
+def get_date(request):
+  if request.method == 'POST':
+    form = DateForm(request.POST)
+    if form.is_valid():
+      HttpResponse("AAA")
+  else:
+    form = DateForm()
+  return render(request, 'asuzr/date_control.html', {'form': form})

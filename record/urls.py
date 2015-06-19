@@ -26,6 +26,7 @@ urlpatterns = patterns('',
     url(r'^accounts/login/$',  login),
     url(r'^accounts/logout/$', logout),
     url(r'^jsi18n$', 'django.views.i18n.javascript_catalog', js_info_dict),
+    url(r'^test/$', 'asuzr.views.get_date'),
 )
 
 if settings.DEBUG:
