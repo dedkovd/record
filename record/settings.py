@@ -87,8 +87,12 @@ STATIC_URL = '/static/'
 
 TEMPLATE_DIRS = ('templates/')
 
-TEMPLATE_CONTEXT_PROCESSORS += ('django.core.context_processors.request',)
+TEMPLATE_CONTEXT_PROCESSORS += ('django.core.context_processors.request',
+                                'django.core.context_processors.csrf',
+                               )
 
 MEDIA_ROOT = 'media/'
 
 MEDIA_URL = 'http://127.0.0.1:8000/media/'
+
+THUMBNAIL_ENGINE = 'sorl.thumbnail.engines.convert_engine.Engine'

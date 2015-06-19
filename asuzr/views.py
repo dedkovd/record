@@ -1,21 +1,16 @@
 ﻿# -*- coding: utf-8 -*-
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext, Context, loader
-from asuzr.models import Product
-from asuzr.models import Attendance
-from asuzr.models import Order
-from asuzr.models import OrderPlan
-from asuzr.models import Schedule
-from asuzr.models import ProdPlan
+from asuzr.models import *
 from datetime import datetime, date, timedelta
 import calendar
 from django.db.models import Count, Sum
 from asuzr.common import custom_date
 from django.contrib.auth.decorators import login_required
-from tables import *
-from forms import *
+from asuzr.tables import *
+from asuzr.forms import *
 from django_tables2 import RequestConfig
 
 @login_required 
@@ -44,17 +39,13 @@ def get_orders_by_date(dt):
   order_list = Order.objects.filter(date=dt).order_by('id')
   return order_list
 
-@login_required
-def visit_view(request):
-  curr_date = datetime.strptime(request.GET.get('date', date.today().strftime('%d.%m.%Y')), '%d.%m.%Y')
-  form = DateForm(request.GET, initial = {'date': curr_date})
-  
-  y,m = curr_date.year, curr_date.month
-  day_in_month = calendar.monthrange(y,m)[1]
-  month_days = {i+1: {'date': custom_date(y,m,i+1)} for i in range(day_in_month)}
-  sdate = date(y,m,1)
-  edate = date(y,m,day_in_month)
+def get_attendance_table(year, month, prefix):
+  day_in_month = calendar.monthrange(year,month)[1]
+  sdate = date(year,month,1)
+  edate = date(year,month,day_in_month)
 
+  month_days = {i+1: {'date': custom_date(year,month,i+1)} for i in range(day_in_month)}
+  
   attend_list = Attendance.objects.filter(date__range = (sdate,edate))
   attend_sum = attend_list.aggregate(Sum('calls'), Sum('visits'))
   for attend in attend_list:
@@ -76,25 +67,56 @@ def visit_view(request):
       month_days[day]['designer'] = '%s, %s' % (month_days[day]['designer'], designer)
     else:
       month_days[day]['designer'] = designer
+
+  month_plan = OrderPlan.objects.filter(date = sdate).first()
+  month_plan = 0 if month_plan == None else month_plan.plan
+  month_balance = month_plan - (order_sum['price__sum'] or 0)
+
+  additional_info = {'title': 'Справочно', 
+                     'rows': [
+                              {'title': 'ПЛАН', 'value': month_plan},
+                              {'title': 'Осталось до выполнения', 'value': month_balance},
+                             ]
+                    }
+
+  table = VisitTable(month_days.values(), prefix = prefix)
+  table.verbose_name = 'Сводная информация'
       
-  table = VisitTable(month_days.values())
-  RequestConfig(request, paginate={'per_page': 32}).configure(table)
   table.set_summaries({
-                        'calls': attend_sum['calls__sum'],
-                        'visits': attend_sum['visits__sum'],
-                        'orders': order_sum['product__count'],
-                        'cost': order_sum['price__sum'],
+                        'calls': attend_sum['calls__sum'] or 0,
+                        'visits': attend_sum['visits__sum'] or 0,
+                        'orders': order_sum['product__count'] or 0,
+                        'cost': order_sum['price__sum'] or 0,
                       })
-  title = 'Таблица посещаемости на %s г.' % curr_date.strftime('%B %Y')
-  
-  if request.method == 'POST':
-    form = DateForm(request.POST)
-    if form.is_valid():
-      print form.cleaned_data
-  else:
-    form = DateForm()
-    
-  return render(request, 'asuzr/table.html', {'table': table, 'title': title, 'form': form})
+ 
+  return table, additional_info
+
+def get_day_orders_table(date, prefix):
+  orders = Order.objects.filter(date = date)
+  orders_price = orders.aggregate(Sum('price'))
+  table = DayOrdersTable(orders, prefix = prefix)
+  table.verbose_name = 'Заказы на %s' % date.strftime('%d %B %Y г')
+  table.set_summary(orders_price['price__sum'] or 0)
+
+  return table 
+
+@login_required
+def visit_view(request):
+  curr_date = datetime.strptime(request.GET.get('date', date.today().strftime('%d.%m.%Y')), '%d.%m.%Y')
+  form = DateForm(request.GET, initial = {'date': curr_date})
+  attendance_table, add_info = get_attendance_table(curr_date.year, curr_date.month, 'attendance-')
+  RequestConfig(request, paginate={'per_page': 32}).configure(attendance_table)
+
+  orders_table = get_day_orders_table(curr_date, 'orders-')
+  RequestConfig(request).configure(orders_table)
+
+  title = 'Таблица посещаемости на %s' % curr_date.strftime('%B %Y г')
+  return render(request, 'asuzr/table2.html', {
+                                               'table1': attendance_table, 
+                                               'table2': orders_table,
+                                               'additional_info': add_info,
+                                               'title': title,
+                                               'form': form})
 
 @login_required 
 def main(request, day, month, year):
@@ -169,9 +191,28 @@ def main(request, day, month, year):
 @login_required
 def sketches(request, order_id):
   curr_order = Order.objects.get(pk = order_id)
+  if request.method == 'POST':
+    if 'sketch_file' in request.FILES:
+      files = request.FILES.getlist('sketch_file')
+      for f in files:
+        instance = Sketch(sketch_file = f, order = curr_order)
+        instance.save()
+      return redirect(sketches, order_id = order_id)
+
   table = SketchesTable(Sketch.objects.filter(order = curr_order))
   RequestConfig(request).configure(table)
-  return render(request, 'asuzr/table.html', {'table': table, 'title': 'Эскизы заказа %s' % curr_order})
+  return render(request, 'asuzr/sketches.html', { 
+                                                 'order_id': order_id, 
+                                                 'table': table, 
+                                                 'title': 'Эскизы заказа %s' % curr_order})
+
+def delete_sketch(request):
+  pk = request.GET.get('pk', -1)
+  sketch = get_object_or_404(Sketch, pk = pk)
+  order_id = sketch.order.pk
+  sketch.sketch_file.delete(save = False)
+  sketch.delete()
+  return redirect(sketches, order_id = order_id)
 
 @login_required 
 def orders(request, archive):
@@ -226,12 +267,3 @@ def prod_plan_view(request):
   title = u'Производственный план на %s - %s' % (sdate.strftime('%d.%m.%Y'), edate.strftime('%d.%m.%Y'))
   RequestConfig(request).configure(table)
   return render(request, 'asuzr/table.html', {'table': table, 'title': title})
-
-def get_date(request):
-  if request.method == 'POST':
-    form = DateForm(request.POST)
-    if form.is_valid():
-      HttpResponse("AAA")
-  else:
-    form = DateForm()
-  return render(request, 'asuzr/date_control.html', {'form': form})

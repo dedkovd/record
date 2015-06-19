@@ -105,7 +105,11 @@ class Order(models.Model):
   
 #Эскизы
 class Sketch(models.Model):
-  sketch_file = models.FileField(upload_to = 'sketches/')	#путь к файу
+  def get_sketch_path(self, file_name):
+    template = 'sketches/%s'
+    return template % '' if self.order == None else '%s/%s' % ((template % self.order.id), file_name)
+
+  sketch_file = models.FileField(upload_to = get_sketch_path)	#путь к файу
   order = models.ForeignKey(Order)	#id заказа
 
   def __unicode__(self):

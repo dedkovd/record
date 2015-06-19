@@ -1,0 +1,12 @@
+{% extends "asuzr/table.html" %}
+
+{% block additional %}
+<div class="inline">
+<form action="/sketches/{{ order_id }}/" method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  <div>Добавить эскизы:</div>
+  <input type="file" name="sketch_file" multiple />
+  <input type="submit" text="Добавить эскиз">
+</form>
+</div>
+{% endblock %}

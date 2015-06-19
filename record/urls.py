@@ -20,13 +20,13 @@ urlpatterns = patterns('',
     url(r'^desreport/$', 'asuzr.views.desreport'),
     url(r'^production_table/(?P<order_id>\d+)/$', 'asuzr.views.production_table'),
     url(r'^sketches/(?P<order_id>\d+)/$', 'asuzr.views.sketches'),
+    url(r'^sketches/delete/$', 'asuzr.views.delete_sketch'),
     url(r'^prodplan/$', 'asuzr.views.prod_plan_view'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^inplaceeditform/', include('inplaceeditform.urls')),
     url(r'^accounts/login/$',  login),
     url(r'^accounts/logout/$', logout),
     url(r'^jsi18n$', 'django.views.i18n.javascript_catalog', js_info_dict),
-    url(r'^test/$', 'asuzr.views.get_date'),
 )
 
 if settings.DEBUG:
