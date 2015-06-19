@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Django settings for record project.
 
@@ -96,3 +98,9 @@ MEDIA_ROOT = 'media/'
 MEDIA_URL = 'http://127.0.0.1:8000/media/'
 
 THUMBNAIL_ENGINE = 'sorl.thumbnail.engines.convert_engine.Engine'
+
+INPLACEEDIT_EVENT = 'click'
+
+INPLACEEDIT_SUCCESS_TEXT = u'Сохранено'
+
+INPLACEEDIT_EDIT_EMPTY_VALUE = u'Редактировать'

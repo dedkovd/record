@@ -14,18 +14,19 @@ class EditableColumn(tables.TemplateColumn):
                 {main_part}
                '''
     main_part = ''
+    params = 'auto_height = 1, auto_width = 1'
     if object_name == '':
        main_part = '''
-                    {{% inplace_edit "record.{field}" auto_height = 1, auto_width = 1 %}}
+                    {{% inplace_edit "record.{field}" {params} %}}
                    '''
     else:
        main_part = '''
                     {{% if record.{object_name} %}}
-                      {{% inplace_edit "record.{object_name}.{field}" auto_height = 1, auto_width = 1 %}}
+                      {{% inplace_edit "record.{object_name}.{field}" {params} %}}
                     {{% endif %}}
                    '''
     template = template.format(main_part = main_part)   
-    template = template.format(field = field_name, object_name = object_name)
+    template = template.format(field = field_name, object_name = object_name, params = params)
 
     super(EditableColumn, self).__init__(template, *args, **kwargs)
 
@@ -35,7 +36,6 @@ class ColoredEditableColumn(EditableColumn):
     self.condition_field = condition_field
 
   def render(self, record, **kwargs):
-    print eval('record.%s' % self.condition_field)
     if self.condition_field != None and eval('record.%s' % self.condition_field):
       self.attrs = {'td': {'bgcolor': '#FFE4E1'}}
     else:
