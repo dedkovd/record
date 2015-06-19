@@ -8,7 +8,6 @@ from models import *
 
 class EditableColumn(tables.TemplateColumn):
   def __init__(self, field_name, object_name = '', *args, **kwargs):
-    super(tables.TemplateColumn, self).__init__(*args, **kwargs)
     template = '''
                 {{{{% load inplace_edit %}}}}
 
@@ -26,12 +25,25 @@ class EditableColumn(tables.TemplateColumn):
                     {{% endif %}}
                    '''
     template = template.format(main_part = main_part)   
- 
-    self.template_code = template.format(field = field_name, object_name = object_name)
+    template = template.format(field = field_name, object_name = object_name)
+
+    super(EditableColumn, self).__init__(template, *args, **kwargs)
+
+class ColoredEditableColumn(EditableColumn):
+  def __init__(self, field_name, object_name = '', condition_field = None, *args, **kwargs):
+    super(ColoredEditableColumn, self).__init__(field_name, object_name, *args, **kwargs)
+    self.condition_field = condition_field
+
+  def render(self, record, **kwargs):
+    if self.condition_field != None and eval('record.%s' % self.condition_field):
+      self.attrs = {'th': {'bgcolor': '#FFE4E1'}}
+    else:
+      self.attrs = {}
+     
+    return super(ColoredEditableColumn, self).render(record, **kwargs) 
 
 class ThumbnailColumn(tables.TemplateColumn):
   def __init__(self, field_name, *args, **kwargs):
-    super(tables.TemplateColumn, self).__init__(*args, **kwargs)
     template = '''
                  {{% load thumbnail %}}
 
@@ -39,7 +51,7 @@ class ThumbnailColumn(tables.TemplateColumn):
                    <img src="{{{{ im.url }}}}">
                  {{% endthumbnail %}}
                '''.format(field = field_name)
-    self.template_code = template
+    super(ThumbnailColumn, self).__init__(template, *args, **kwargs)
 
 class OrdersTable(tables.Table):
   date = tables.DateColumn('d/m/Y', verbose_name = 'Дата')
@@ -82,7 +94,7 @@ class OrdersTable(tables.Table):
     exclude = ('id', 'calls', 'contact', 'phone_num', 'cancelled', 'designer', )
 
 class ArchiveOrdersTable(OrdersTable):
-  calls = EditableColumn('calls', verbose_name = 'Обзвон')
+  calls = ColoredEditableColumn('calls', condition_field = 'calls_color', verbose_name = 'Обзвон')
 
   class Meta:
     attrs = {'class': 'paleblue'}
