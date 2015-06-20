@@ -3,6 +3,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext, Context, loader
+from django.contrib.admin.models import LogEntry
 from asuzr.models import *
 from datetime import datetime, date, timedelta
 import calendar
@@ -267,3 +268,10 @@ def prod_plan_view(request):
   title = u'Производственный план на %s - %s' % (sdate.strftime('%d.%m.%Y'), edate.strftime('%d.%m.%Y'))
   RequestConfig(request).configure(table)
   return render(request, 'asuzr/table.html', {'table': table, 'title': title})
+
+@login_required
+def log_view(request):
+  log = LogEntry.objects.all()
+  table = LogTable(log)
+  RequestConfig(request).configure(table)
+  return render(request, 'asuzr/table.html', {'table': table, 'title': 'Журнал операций'})
