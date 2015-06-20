@@ -4,6 +4,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from datetime import date, timedelta
+from django.contrib.auth.signals import user_logged_in, user_logged_out, user_login_failed
+from django.contrib.admin.models import LogEntry
 
 #Изделия
 class Product(models.Model):
@@ -158,3 +160,23 @@ class OrderCosts(models.Model):
   
   def __unicode__(self):
    return ', '.join((self.order.product.name, self.cost_item.name))
+
+
+############################################################################################
+# Signal handlers
+############################################################################################
+
+def auth_log(message, user = None):
+  if user == None:
+    user = User.objects.get(pk = 1)
+
+  entry = LogEntry(user = user, object_repr = message, action_flag = 4)
+  entry.save()
+
+on_login = lambda **kwargs: auth_log(u'Вход в систему', kwargs['user'])
+on_logout = lambda **kwargs: auth_log(u'Выход из системы', kwargs['user'])
+on_login_error = lambda **kwargs: auth_log(u'Ошибка входа пользователя %s' % kwargs['credentials']['username']) 
+
+user_logged_in.connect(on_login)
+user_logged_out.connect(on_logout)
+user_login_failed.connect(on_login_error)
