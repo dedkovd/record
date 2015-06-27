@@ -49,7 +49,7 @@ class ThumbnailColumn(tables.TemplateColumn):
     template = '''
                  {{% load thumbnail %}}
 
-                 {{% thumbnail record.{field} "100x100" as im %}}
+                 {{% thumbnail record.{field} "200x200" as im %}}
                    <img src="{{{{ im.url }}}}">
                  {{% endthumbnail %}}
                '''.format(field = field_name)
