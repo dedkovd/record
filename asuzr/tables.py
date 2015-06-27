@@ -163,10 +163,11 @@ class VisitTable(tables.Table):
 class DayOrdersTable(OrdersTable):
   designer = tables.Column(verbose_name = 'Дизайнер')
 
-  summary = ['Итого:', 0, '', '', '',]
+  summary = ['Итого:', 0, 0, '', '', '', '', '']
 
-  def set_summary(self, price):
+  def set_summary(self, price, paid):
     self.summary[1] = price
+    self.summary[2] = paid
 
   def render_designer(self, value):
     return ' '.join((value.first_name, value.last_name))
@@ -175,9 +176,6 @@ class DayOrdersTable(OrdersTable):
     empty_text = 'Заказов для этого дня нет'
     attrs = {'class': 'paleblue'}
     exclude = ('date',
-               'delivery', 
-               'lifting', 
-               'paid', 
                'ostatok', 
                'approved', 
                'sketch', 
@@ -185,7 +183,8 @@ class DayOrdersTable(OrdersTable):
                'is_done',
               )
     sequence = ('product', 
-                'price', 
+                'price',
+                'paid',
                 'address', 
                 'designer', 
                 'deadline',

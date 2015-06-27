@@ -94,10 +94,10 @@ def get_attendance_table(year, month, prefix):
 
 def get_day_orders_table(date, prefix):
   orders = Order.objects.filter(date = date)
-  orders_price = orders.aggregate(Sum('price'))
+  summaries = orders.aggregate(Sum('price'), Sum('paid'))
   table = DayOrdersTable(orders, prefix = prefix)
   table.verbose_name = 'Заказы на %s' % date.strftime('%d %B %Y г')
-  table.set_summary(orders_price['price__sum'] or 0)
+  table.set_summary(summaries['price__sum'] or 0, summaries['paid__sum'] or 0)
 
   return table 
 
