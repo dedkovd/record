@@ -101,6 +101,8 @@ class Order(models.Model):
     need_color=False
     if self.approved!=None:
       need_color = (date.today()-self.approved.date()>= timedelta(days = 10))
+    need_color = need_color and (self.calls == '')
+    
     return need_color
   
 #Эскизы

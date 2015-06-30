@@ -8,30 +8,43 @@ from models import *
 
 class EditableColumn(tables.TemplateColumn):
   def __init__(self, field_name, object_name = '', *args, **kwargs):
-    super(tables.TemplateColumn, self).__init__(*args, **kwargs)
     template = '''
                 {{{{% load inplace_edit %}}}}
 
                 {main_part}
                '''
     main_part = ''
+    params = 'auto_height = 1, auto_width = 1'
     if object_name == '':
        main_part = '''
-                    {{% inplace_edit "record.{field}" auto_height = 1, auto_width = 1 %}}
+                    {{% inplace_edit "record.{field}" {params} %}}
                    '''
     else:
        main_part = '''
                     {{% if record.{object_name} %}}
-                      {{% inplace_edit "record.{object_name}.{field}" auto_height = 1, auto_width = 1 %}}
+                      {{% inplace_edit "record.{object_name}.{field}" {params} %}}
                     {{% endif %}}
                    '''
     template = template.format(main_part = main_part)   
- 
-    self.template_code = template.format(field = field_name, object_name = object_name)
+    template = template.format(field = field_name, object_name = object_name, params = params)
+
+    super(EditableColumn, self).__init__(template, *args, **kwargs)
+
+class ColoredEditableColumn(EditableColumn):
+  def __init__(self, field_name, object_name = '', condition_field = None, *args, **kwargs):
+    super(ColoredEditableColumn, self).__init__(field_name, object_name, *args, **kwargs)
+    self.condition_field = condition_field
+
+  def render(self, record, **kwargs):
+    if self.condition_field != None and eval('record.%s' % self.condition_field):
+      self.attrs = {'td': {'bgcolor': '#FFE4E1'}}
+    else:
+      self.attrs = {}
+     
+    return super(ColoredEditableColumn, self).render(record, **kwargs) 
 
 class ThumbnailColumn(tables.TemplateColumn):
   def __init__(self, field_name, *args, **kwargs):
-    super(tables.TemplateColumn, self).__init__(*args, **kwargs)
     template = '''
                  {{% load thumbnail %}}
 
@@ -39,7 +52,7 @@ class ThumbnailColumn(tables.TemplateColumn):
                    <img src="{{{{ im.url }}}}">
                  {{% endthumbnail %}}
                '''.format(field = field_name)
-    self.template_code = template
+    super(ThumbnailColumn, self).__init__(template, *args, **kwargs)
 
 class OrdersTable(tables.Table):
   date = tables.DateColumn('d/m/Y', verbose_name = 'Дата')
@@ -64,6 +77,7 @@ class OrdersTable(tables.Table):
 
   class Meta:
     model = Order
+    empty_text = 'Незавершенных заказов нет'
     attrs = {'class': 'paleblue'}
     sequence = ('date', 
                 'deadline', 
@@ -81,7 +95,7 @@ class OrdersTable(tables.Table):
     exclude = ('id', 'calls', 'contact', 'phone_num', 'cancelled', 'designer', )
 
 class ArchiveOrdersTable(OrdersTable):
-  calls = EditableColumn('calls', verbose_name = 'Обзвон')
+  calls = ColoredEditableColumn('calls', condition_field = 'calls_color', verbose_name = 'Обзвон')
 
   class Meta:
     attrs = {'class': 'paleblue'}
@@ -99,9 +113,7 @@ class DesignerTable(tables.Table):
     return '%0.1f' % value
   
   class Meta:
-    attrs = {'class': 'paleblue'}
-
-  class Meta:
+    empty_text = 'Заказов за этот период не было'
     attrs = {'class': 'paleblue'}
 
 class SketchesTable(tables.Table):
@@ -114,6 +126,7 @@ class SketchesTable(tables.Table):
                            (reverse('asuzr.views.delete_sketch'), escape(record.id)))
 
   class Meta:
+    empty_text = 'Эскизов для этого заказа пока нет'
     attrs = {'class': 'paleblue'}
 
 class VisitTable(tables.Table):
@@ -158,6 +171,7 @@ class DayOrdersTable(OrdersTable):
     return ' '.join((value.first_name, value.last_name))
 
   class Meta:
+    empty_text = 'Заказов для этого дня нет'
     attrs = {'class': 'paleblue'}
     exclude = ('date',
                'delivery', 
