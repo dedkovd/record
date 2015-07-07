@@ -126,7 +126,7 @@ class SketchesTable(tables.Table):
                            (reverse('asuzr.views.delete_sketch'), escape(record.id)))
 
   class Meta:
-    empty_text = 'Эскизов для этого заказа пока нет'
+    empty_text = 'Эскизов для этого заказа нет'
     attrs = {'class': 'paleblue'}
 
 class VisitTable(tables.Table):

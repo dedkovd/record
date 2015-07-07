@@ -1,4 +1,14 @@
-{% extends "asuzr/table.html" %}
+{% extends "asuzr/base.html" %}
+{% load thumbnail %}
+{% block page %}
+ {% if sketch_list %}
+ <ul>
+  {% for sketch in sketch_list %} 
+    <li>  {% thumbnail sketch.sketch_file "200x200" crop="center" as im %} <img src = "{{ im.url }}"> {% endthumbnail %} </li>
+  {% endfor %}
+ </ul>
+ {% endif %}
+{% endblock %}
 
 {% block additional %}
 <div class="inline">
