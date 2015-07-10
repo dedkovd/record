@@ -57,7 +57,7 @@ class ThumbnailColumn(tables.TemplateColumn):
 class OrdersTable(tables.Table):
   date = tables.DateColumn('d/m/Y', verbose_name = 'Дата')
   deadline = tables.DateColumn('d/m/Y', verbose_name = 'Срок сдачи')
-  product = tables.Column(verbose_name = 'Наименование') 
+  product = tables.LinkColumn('asuzr.views.production_table', verbose_name = 'Наименование', args=[tables.utils.A('pk')]) 
   delivery = EditableColumn('delivery', verbose_name = 'Доставка')
   lifting = EditableColumn('lifting', verbose_name = 'Подъем')
   address = tables.Column(verbose_name = 'Адрес')
@@ -200,3 +200,23 @@ class ProdPlanTable(tables.Table):
 
   class Meta:
     attrs = {'class': 'paleblue'}
+    
+class ProductionTable(tables.Table):
+  cost_item = tables.Column(verbose_name = 'Комплектующие')
+  value = tables.Column(verbose_name = 'Стоимость')
+  
+  summary = ['Итого затрат', 0]
+  balance = ['Прибыль', 0]
+  
+  def render_value(self, value):
+    return '%0.2f' % value
+  
+  def set_summary(self, value):
+    self.summary[1] = value
+    
+  def set_balance(self, value):
+    self.balance[1] = value
+  
+  class Meta:
+    attrs = {'class': 'paleblue'}
+    template = 'asuzr/totals_table.html'

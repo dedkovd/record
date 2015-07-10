@@ -3,6 +3,8 @@
 {% load render_table from django_tables2 %}
 
 {% block page %}
+  <h3>{{ table.verbose_name }}</h3>
+  <h3>{{ table.verbose_name2 }}</h3>
   {% block table %}
     {% render_table table %}
   {% endblock %}

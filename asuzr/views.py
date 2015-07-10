@@ -238,16 +238,17 @@ def desreport(request):
 
 @login_required
 def production_table(request, order_id):
-  order_list = Order.objects.filter(is_done=False).order_by('-id')
-  sel_order = Order.objects.filter(id=order_id)
-  cost_items = sel_order.values('cost_items')
-  t=loader.get_template('asuzr/order_costs.html')
-  c=RequestContext(request,{
-    'order_list' : order_list,
-    'sel_order' : sel_order,
-    'cost_items' : cost_items,
-    })
-  return HttpResponse(t.render(c))
+  order_costs = OrderCosts.objects.filter(order=order_id)
+  table = ProductionTable(order_costs)
+  curr_order = Order.objects.get(pk = order_id)
+  title = u'Производственная таблица'  
+  table.verbose_name  = u'Заказ: %s' % (', '.join((curr_order.product.name, curr_order.address)))
+  table.verbose_name2 = u'Стоимость: %s' % str(curr_order.price)
+  costs_sum = order_costs.aggregate(Sum('value'))
+  table.set_summary(costs_sum['value__sum'] or 0)
+  table.set_balance(curr_order.price - costs_sum['value__sum'] or 0)
+  RequestConfig(request).configure(table)
+  return render(request, 'asuzr/table.html', {'table': table, 'title': title})
 
 @login_required
 def prod_plan_view(request):

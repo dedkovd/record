@@ -10,6 +10,13 @@
       {% endfor %}
       </tr>
    {% endif %}
+   {% if table.balance %}
+      <tr>
+      {% for balance in table.balance %}
+       <td> {{ balance }} </td>
+      {% endfor %}
+      </tr>
+   {% endif %}
    </tfoot>
 {% endblock table.tfoot %}
 
