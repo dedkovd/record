@@ -246,7 +246,7 @@ def production_table(request, order_id):
   table.verbose_name2 = u'Стоимость: %s' % str(curr_order.price)
   costs_sum = order_costs.aggregate(Sum('value'))
   table.set_summary(costs_sum['value__sum'] or 0)
-  table.set_balance(curr_order.price - costs_sum['value__sum'] or 0)
+  table.set_balance(curr_order.price - (costs_sum['value__sum'] or 0))
   RequestConfig(request).configure(table)
   return render(request, 'asuzr/table.html', {'table': table, 'title': title})
 
