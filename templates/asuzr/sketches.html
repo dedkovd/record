@@ -1,10 +1,15 @@
 {% extends "asuzr/base.html" %}
 {% load thumbnail %}
 {% block page %}
+<style>
+  #list li{
+      list-style-type: none; /* Прячем исходные маркеры */
+  }
+</style>
  {% if sketch_list %}
- <ul>
+ <ul id = "list">
   {% for sketch in sketch_list %} 
-    <li>  {% thumbnail sketch.sketch_file "200x200" crop="center" as im %} <img src = "{{ im.url }}"> {% endthumbnail %} </li>
+    <li>  {% thumbnail sketch.sketch_file "200x200" crop="center" as im %} <a href = {{sketch.sketch_file.url}}> <img src = "{{ im.url }}"> </a>{% endthumbnail %} </li>
   {% endfor %}
  </ul>
  {% endif %}

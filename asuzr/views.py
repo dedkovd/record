@@ -204,7 +204,7 @@ def sketches(request, order_id):
   return render(request, 'asuzr/sketches.html', { 
                                                  'order_id': order_id, 
                                                  'sketch_list': sketch_list, 
-                                                 'title': 'Эскизы заказа %s' % curr_order})
+                                                 'title': 'Эскизы заказа: %s' % curr_order})
 
 def delete_sketch(request):
   pk = request.GET.get('pk', -1)
