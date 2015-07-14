@@ -104,7 +104,7 @@ def get_day_orders_table(date, prefix):
 @login_required
 def visit_view(request):
   curr_date = datetime.strptime(request.GET.get('date', date.today().strftime('%d.%m.%Y')), '%d.%m.%Y')
-  form = DateForm(request.GET, initial = {'date': curr_date})
+  form = DateForm({'date':curr_date})
   attendance_table, add_info = get_attendance_table(curr_date.year, curr_date.month, 'attendance-')
   RequestConfig(request, paginate={'per_page': 32}).configure(attendance_table)
 
@@ -226,15 +226,16 @@ def orders(request, archive):
 
 @login_required 
 def desreport(request):
-  start_date = request.GET.get('sdate', date.today().strftime('%d.%m.%y'))
-  sdate = datetime.strptime(start_date, '%d.%m.%y')
-  end_date = request.GET.get('edate', date.today().strftime('%d.%m.%y'))
-  edate = datetime.strptime(end_date, '%d.%m.%y')
+  start_date = request.GET.get('sdate', date.today().strftime('%d.%m.%Y'))
+  sdate = datetime.strptime(start_date, '%d.%m.%Y')
+  end_date = request.GET.get('edate', date.today().strftime('%d.%m.%Y'))
+  edate = datetime.strptime(end_date, '%d.%m.%Y')
   Table = DesignerTable
   table = Table(Order.objects.filter(cancelled=False, date__range=(sdate,edate)).values('designer__first_name','designer__last_name').annotate(Sum('price'),Count('designer')))
   title = u'Отчет по дизайнерам за '+' - '.join((start_date, end_date))
+  form = DiapDateForm({'sdate': sdate, 'edate': edate})
   RequestConfig(request).configure(table)
-  return render(request, 'asuzr/table.html', {'table': table, 'title': title})
+  return render(request, 'asuzr/table.html', {'table': table, 'title': title, 'form': form})
 
 @login_required
 def production_table(request, order_id):
@@ -252,13 +253,14 @@ def production_table(request, order_id):
 @login_required
 def prod_plan_view(request):
   curr_date = datetime.strptime(request.GET.get('date', date.today().strftime('%d.%m.%Y')), '%d.%m.%Y')
-  y,m = curr_date.year, curr_date.month
+  y,m,d = curr_date.year, curr_date.month, curr_date.day
   wd = curr_date.weekday()
   sdate = curr_date - timedelta(days = wd)
   edate = curr_date + timedelta(days = 6-wd)
   
-  week_days = {i: {'date': custom_date(y,m,sdate.day+i)} for i in range(0,7)}
-  
+  days =  [sdate + timedelta(days=i) for i in range(0,7)]
+  week_days = {i.weekday(): {'date': custom_date(i.year,i.month,i.day)} for i in days}
+  print week_days
   prodplan_list = ProdPlan.objects.filter(start_date__range = (sdate,edate))
   
   for prodplan in prodplan_list:
@@ -266,8 +268,9 @@ def prod_plan_view(request):
   
   table = ProdPlanTable(week_days.values())
   title = u'Производственный план на %s - %s' % (sdate.strftime('%d.%m.%Y'), edate.strftime('%d.%m.%Y'))
+  form = DateForm({'date':curr_date})
   RequestConfig(request).configure(table)
-  return render(request, 'asuzr/table.html', {'table': table, 'title': title})
+  return render(request, 'asuzr/table.html', {'table': table, 'title': title, 'form': form})
 
 @login_required
 def log_view(request):
