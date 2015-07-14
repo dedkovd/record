@@ -101,10 +101,17 @@ def get_day_orders_table(date, prefix):
 
   return table 
 
+def create_attendance_if_need(date):
+  attendance, created = Attendance.objects.get_or_create(date = date,
+          defaults={'calls': 0, 'visits': 0})
+  if created:
+      attendance.save()
+
 @login_required
 def visit_view(request):
   curr_date = datetime.strptime(request.GET.get('date', date.today().strftime('%d.%m.%Y')), '%d.%m.%Y')
   form = DateForm({'date':curr_date})
+  create_attendance_if_need(curr_date)
   attendance_table, add_info = get_attendance_table(curr_date.year, curr_date.month, 'attendance-')
   RequestConfig(request, paginate={'per_page': 32}).configure(attendance_table)
 
