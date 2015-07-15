@@ -3,6 +3,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext, Context, loader
+from django.contrib.admin.models import LogEntry
 from asuzr.models import *
 from datetime import datetime, date, timedelta
 import calendar
@@ -93,17 +94,24 @@ def get_attendance_table(year, month, prefix):
 
 def get_day_orders_table(date, prefix):
   orders = Order.objects.filter(date = date)
-  orders_price = orders.aggregate(Sum('price'))
+  summaries = orders.aggregate(Sum('price'), Sum('paid'))
   table = DayOrdersTable(orders, prefix = prefix)
   table.verbose_name = 'Заказы на %s' % date.strftime('%d %B %Y г')
-  table.set_summary(orders_price['price__sum'] or 0)
+  table.set_summary(summaries['price__sum'] or 0, summaries['paid__sum'] or 0)
 
   return table 
+
+def create_attendance_if_need(date):
+  attendance, created = Attendance.objects.get_or_create(date = date,
+          defaults={'calls': 0, 'visits': 0})
+  if created:
+      attendance.save()
 
 @login_required
 def visit_view(request):
   curr_date = datetime.strptime(request.GET.get('date', date.today().strftime('%d.%m.%Y')), '%d.%m.%Y')
   form = DateForm({'date':curr_date})
+  create_attendance_if_need(curr_date)
   attendance_table, add_info = get_attendance_table(curr_date.year, curr_date.month, 'attendance-')
   RequestConfig(request, paginate={'per_page': 32}).configure(attendance_table)
 
@@ -271,3 +279,10 @@ def prod_plan_view(request):
   form = DateForm({'date':curr_date})
   RequestConfig(request).configure(table)
   return render(request, 'asuzr/table.html', {'table': table, 'title': title, 'form': form})
+
+@login_required
+def log_view(request):
+  log = LogEntry.objects.all()
+  table = LogTable(log)
+  RequestConfig(request).configure(table)
+  return render(request, 'asuzr/table.html', {'table': table, 'title': 'Журнал операций'})

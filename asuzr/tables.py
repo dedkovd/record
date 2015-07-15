@@ -3,6 +3,7 @@
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
+from django.contrib.admin.models import LogEntry
 import django_tables2 as tables
 from models import *
 
@@ -48,7 +49,7 @@ class ThumbnailColumn(tables.TemplateColumn):
     template = '''
                  {{% load thumbnail %}}
 
-                 {{% thumbnail record.{field} "100x100" as im %}}
+                 {{% thumbnail record.{field} "200x200" as im %}}
                    <img src="{{{{ im.url }}}}">
                  {{% endthumbnail %}}
                '''.format(field = field_name)
@@ -162,10 +163,11 @@ class VisitTable(tables.Table):
 class DayOrdersTable(OrdersTable):
   designer = tables.Column(verbose_name = 'Дизайнер')
 
-  summary = ['Итого:', 0, '', '', '',]
+  summary = ['Итого:', 0, 0, '', '', '', '', '']
 
-  def set_summary(self, price):
+  def set_summary(self, price, paid):
     self.summary[1] = price
+    self.summary[2] = paid
 
   def render_designer(self, value):
     return ' '.join((value.first_name, value.last_name))
@@ -174,9 +176,6 @@ class DayOrdersTable(OrdersTable):
     empty_text = 'Заказов для этого дня нет'
     attrs = {'class': 'paleblue'}
     exclude = ('date',
-               'delivery', 
-               'lifting', 
-               'paid', 
                'ostatok', 
                'approved', 
                'sketch', 
@@ -184,7 +183,8 @@ class DayOrdersTable(OrdersTable):
                'is_done',
               )
     sequence = ('product', 
-                'price', 
+                'price',
+                'paid',
                 'address', 
                 'designer', 
                 'deadline',
@@ -220,3 +220,14 @@ class ProductionTable(tables.Table):
   class Meta:
     attrs = {'class': 'paleblue'}
     template = 'asuzr/totals_table.html'
+
+class LogTable(tables.Table):
+  def render_action_flag(self, value):
+    return {1: 'Добавление', 
+            2: 'Изменение', 
+            3: 'Удаление',
+            4: 'Авторизация'}[value]
+
+  class Meta:
+    model = LogEntry
+    attrs = {'class': 'paleblue'}

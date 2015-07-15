@@ -48,7 +48,10 @@
  <li><a href={% url 'asuzr.views.orders' 1 %}>Архивная таблица</a></li>
  <li><a href={% url 'asuzr.views.desreport' %}>Отчет по дизайнерам</a></li>
  <li><a href={% url 'asuzr.views.prod_plan_view' %}>Производственный план</a></li>
- {% if request.user.is_staff %}<li><a href={% url 'admin:index' %}>Администрирование</a></li>{% endif %}
+ {% if request.user.is_staff %}
+   <li><a href={% url 'asuzr.views.log_view' %}>Журнал операций</a></li>
+   <li><a href={% url 'admin:index' %}>Администрирование</a></li>
+ {% endif %}
 </ul>
 <div id="user">
 {% if request.user.is_authenticated %} 
