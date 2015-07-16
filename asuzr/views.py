@@ -267,7 +267,6 @@ def prod_plan_view(request):
   
   days =  [sdate + timedelta(days=i) for i in range(0,7)]
   week_days = {i.weekday(): {'date': custom_date(i.year,i.month,i.day)} for i in days}
-  print week_days
   prodplan_list = ProdPlan.objects.filter(start_date__range = (sdate,edate))
   
   for prodplan in prodplan_list:
