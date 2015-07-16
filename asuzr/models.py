@@ -4,6 +4,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from datetime import date, timedelta
+from django.utils import dateformat
 from django.contrib.auth.signals import user_logged_in, user_logged_out, user_login_failed
 from django.contrib.admin.models import LogEntry
 
@@ -76,7 +77,7 @@ class Order(models.Model):
   cost_items = models.ManyToManyField(CostItem, through='OrderCosts', related_name='+', null=True, blank=True)   #статьи затрат
 
   def __unicode__(self):
-    return ', '.join((self.date.strftime('%d %b %Y'), self.product.name, self.address))
+    return ', '.join((dateformat.format(self.date, 'd E Y'), self.product.name, self.address))
   
   @property
   def date_dmy(self):
