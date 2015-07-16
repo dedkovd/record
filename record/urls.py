@@ -20,7 +20,7 @@ urlpatterns = patterns('',
     url(r'^desreport/$', 'asuzr.views.desreport'),
     url(r'^production_table/(?P<order_id>\d+)/$', 'asuzr.views.production_table'),
     url(r'^sketches/(?P<order_id>\d+)/$', 'asuzr.views.sketches'),
-    url(r'^sketches/delete/$', 'asuzr.views.delete_sketch'),
+    url(r'^sketches/delete/$', 'asuzr.views.delete_sketch', name = 'asuzr-del-sketch'),
     url(r'^prodplan/$', 'asuzr.views.prod_plan_view'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^inplaceeditform/', include('inplaceeditform.urls')),
@@ -33,4 +33,5 @@ if settings.DEBUG:
     # static files (images, css, javascript, etc.)
     urlpatterns += patterns('',
         (r'^media/(?P<path>.*)$', 'django.views.static.serve', {
-        'document_root': settings.MEDIA_ROOT}))
+        'document_root': settings.MEDIA_ROOT})) 
+
