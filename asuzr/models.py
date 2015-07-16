@@ -180,3 +180,11 @@ on_login_error = lambda **kwargs: auth_log(u'Ошибка входа польз�
 user_logged_in.connect(on_login)
 user_logged_out.connect(on_logout)
 user_login_failed.connect(on_login_error)
+
+############################################################################################
+# Locale settings
+############################################################################################
+
+import locale
+
+locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
