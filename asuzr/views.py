@@ -208,7 +208,6 @@ def sketches(request, order_id):
       return redirect(sketches, order_id = order_id)
 
   sketch_list = Sketch.objects.filter(order = curr_order)
-  #RequestConfig(request).configure(table)
   return render(request, 'asuzr/sketches.html', { 
                                                  'order_id': order_id, 
                                                  'sketch_list': sketch_list, 
