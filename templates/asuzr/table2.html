@@ -5,6 +5,13 @@
 {% block page %}
   <div class="inline"><div><h3>{{ table1.verbose_name }}</h3></div>{% render_table table1 %}</div>
   <div class="inline"><div><h3>{{ table2.verbose_name }}</h3></div>{% render_table table2 %}</div>
+  {% if order_form %}
+  <form action="{% url 'add-order' %}" method="POST" >
+  {% csrf_token %}
+  {{order_form}}
+  <input type="submit" text="Добавить заказ">
+  </form>
+  {% endif %}
   {% if additional_info %}
    <div>
     <hr>

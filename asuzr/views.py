@@ -117,6 +117,8 @@ def visit_view(request):
 
   orders_table = get_day_orders_table(curr_date, 'orders-')
   RequestConfig(request).configure(orders_table)
+  
+  order_form = OrderForm()
 
   title = 'Таблица посещаемости на %s' % curr_date.strftime('%B %Y г')
   return render(request, 'asuzr/table2.html', {
@@ -124,7 +126,9 @@ def visit_view(request):
                                                'table2': orders_table,
                                                'additional_info': add_info,
                                                'title': title,
-                                               'form': form})
+                                               'dateform': form,
+                                               'order_form': order_form
+                                               })
 
 @login_required 
 def main(request, day, month, year):
@@ -213,6 +217,12 @@ def sketches(request, order_id):
                                                  'sketch_list': sketch_list, 
                                                  'title': 'Эскизы заказа: %s' % curr_order})
 
+def add_order(request):
+  new_order = Order(date=date.today(), designer = request.user)
+  form = OrderForm(request.POST, instance = new_order)
+  form.save()
+  return redirect(visit_view)
+
 def delete_sketch(request):
   pk = request.GET.get('pk', -1)
   sketch = get_object_or_404(Sketch, pk = pk)
@@ -241,7 +251,7 @@ def desreport(request):
   title = u'Отчет по дизайнерам за '+' - '.join((start_date, end_date))
   form = DiapDateForm({'sdate': sdate, 'edate': edate})
   RequestConfig(request).configure(table)
-  return render(request, 'asuzr/table.html', {'table': table, 'title': title, 'form': form})
+  return render(request, 'asuzr/table.html', {'table': table, 'title': title, 'dateform': form})
 
 @login_required
 def production_table(request, order_id):
@@ -277,7 +287,7 @@ def prod_plan_view(request):
   title = u'Производственный план на %s - %s' % (sdate.strftime('%d.%m.%Y'), edate.strftime('%d.%m.%Y'))
   form = DateForm({'date':curr_date})
   RequestConfig(request).configure(table)
-  return render(request, 'asuzr/table.html', {'table': table, 'title': title, 'form': form})
+  return render(request, 'asuzr/table.html', {'table': table, 'title': title, 'dateform': form})
 
 @login_required
 def log_view(request):
