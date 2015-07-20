@@ -7,6 +7,17 @@ from django.contrib.admin.models import LogEntry
 import django_tables2 as tables
 from models import *
 
+class StaffLinkColumn(tables.TemplateColumn):
+  def __init__(self, view, *args, **kwargs):
+    template = '''
+                {{% if request.user.is_staff %}}
+                  <a href={{% url '{view}' record.id %}}>{{{{ record.product }}}}</a>
+                {{% else %}}
+                  {{{{ record.product }}}}
+                {{% endif %}}
+               '''.format(view = view)
+    super(StaffLinkColumn, self).__init__(template, *args, **kwargs)
+
 class EditableColumn(tables.TemplateColumn):
   def __init__(self, field_name, object_name = '', *args, **kwargs):
     template = '''
@@ -58,7 +69,8 @@ class ThumbnailColumn(tables.TemplateColumn):
 class OrdersTable(tables.Table):
   date = tables.DateColumn('d/m/Y', verbose_name = 'Дата')
   deadline = tables.DateColumn('d/m/Y', verbose_name = 'Срок сдачи')
-  product = tables.LinkColumn('asuzr.views.production_table', verbose_name = 'Наименование', args=[tables.utils.A('pk')]) 
+  #product = tables.LinkColumn('asuzr.views.production_table', verbose_name = 'Наименование', args=[tables.utils.A('pk')]) 
+  product = StaffLinkColumn(view = 'asuzr.views.production_table', verbose_name = 'Наименование') 
   delivery = EditableColumn('delivery', verbose_name = 'Доставка')
   lifting = EditableColumn('lifting', verbose_name = 'Подъем')
   address = tables.Column(verbose_name = 'Адрес')
