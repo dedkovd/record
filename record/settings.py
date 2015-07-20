@@ -71,7 +71,7 @@ DATABASES = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
-LANGUAGE_CODE = 'ru-ru'
+LANGUAGE_CODE = 'ru-RU'
 
 TIME_ZONE = 'Asia/Yekaterinburg'
 
@@ -106,3 +106,4 @@ INPLACEEDIT_SUCCESS_TEXT = u'Сохранено'
 from django.utils.safestring import mark_safe
 
 INPLACEEDIT_EDIT_EMPTY_VALUE = mark_safe(u'<div class="gray">Редактировать</div>')
+ADAPTOR_INPLACEEDIT_EDIT = 'inplaceeditform.perms.AdminDjangoPermEditInline'

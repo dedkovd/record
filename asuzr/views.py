@@ -6,6 +6,7 @@ from django.template import RequestContext, Context, loader
 from django.contrib.admin.models import LogEntry
 from asuzr.models import *
 from datetime import datetime, date, timedelta
+from django.utils import dateformat
 import calendar
 from django.db.models import Count, Sum
 from asuzr.common import custom_date
@@ -96,7 +97,7 @@ def get_day_orders_table(date, prefix):
   orders = Order.objects.filter(date = date)
   summaries = orders.aggregate(Sum('price'), Sum('paid'))
   table = DayOrdersTable(orders, prefix = prefix)
-  table.verbose_name = 'Заказы на %s' % date.strftime('%d %B %Y г')
+  table.verbose_name = u'Заказы на %s' % dateformat.format(date, 'd E Y')
   table.set_summary(summaries['price__sum'] or 0, summaries['paid__sum'] or 0)
 
   return table 
@@ -120,7 +121,7 @@ def visit_view(request):
   
   order_form = OrderForm()
 
-  title = 'Таблица посещаемости на %s' % curr_date.strftime('%B %Y г')
+  title = u'Таблица посещаемости на %s' % dateformat.format(curr_date, 'F Y')
   return render(request, 'asuzr/table2.html', {
                                                'table1': attendance_table, 
                                                'table2': orders_table,
@@ -215,7 +216,7 @@ def sketches(request, order_id):
   return render(request, 'asuzr/sketches.html', { 
                                                  'order_id': order_id, 
                                                  'sketch_list': sketch_list, 
-                                                 'title': 'Эскизы заказа: %s' % curr_order})
+                                                 'title': u'Эскизы заказа %s' % curr_order})
 
 def add_order(request):
   new_order = Order(date=date.today(), designer = request.user)
@@ -236,7 +237,7 @@ def orders(request, archive):
   is_archive = (archive == '1')
   Table = ArchiveOrdersTable if is_archive else OrdersTable
   table = Table(Order.objects.filter(is_done = is_archive))
-  title = 'Архивная таблица заказов' if is_archive else 'Таблица выхода заказов'
+  title = u'Архивная таблица заказов' if is_archive else u'Таблица выхода заказов'
   RequestConfig(request).configure(table)
   return render(request, 'asuzr/table.html', {'table': table, 'title': title})
 
@@ -277,7 +278,6 @@ def prod_plan_view(request):
   
   days =  [sdate + timedelta(days=i) for i in range(0,7)]
   week_days = {i.weekday(): {'date': custom_date(i.year,i.month,i.day)} for i in days}
-  print week_days
   prodplan_list = ProdPlan.objects.filter(start_date__range = (sdate,edate))
   
   for prodplan in prodplan_list:
