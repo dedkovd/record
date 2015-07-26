@@ -219,7 +219,6 @@ def delete_sketch(request):
   pk = request.GET.get('pk', -1)
   sketch = get_object_or_404(Sketch, pk = pk)
   order_id = sketch.order.pk
-  sketch.sketch_file.delete(save = False)
   sketch.delete()
   return redirect(sketches, order_id = order_id)
 
