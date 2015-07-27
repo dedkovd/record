@@ -67,8 +67,8 @@ class ThumbnailColumn(tables.TemplateColumn):
     super(ThumbnailColumn, self).__init__(template, *args, **kwargs)
 
 class OrdersTable(tables.Table):
-  date = tables.DateColumn('d/m/Y', verbose_name = 'Дата')
-  deadline = tables.DateColumn('d/m/Y', verbose_name = 'Срок сдачи')
+  date = tables.DateColumn('d.m.Y', verbose_name = 'Дата')
+  deadline = tables.DateColumn('d.m.Y', verbose_name = 'Срок сдачи')
   #product = tables.LinkColumn('asuzr.views.production_table', verbose_name = 'Наименование', args=[tables.utils.A('pk')]) 
   product = StaffLinkColumn(view = 'asuzr.views.production_table', verbose_name = 'Наименование') 
   delivery = EditableColumn('delivery', verbose_name = 'Доставка')
@@ -159,6 +159,7 @@ class VisitTable(tables.Table):
       idx = indexes[s]
       self.summary[idx] = summaries[s]
  
+
   def render_orders(self, value, record, column):
     value = 0 if value == None else value
     return mark_safe('<a href="%s?date=%s">%s</a>' % (
@@ -201,7 +202,7 @@ class DayOrdersTable(OrdersTable):
                 'designer', 
                 'deadline',
                )
-    template = 'asuzr/totals_table.html'
+    template = 'asuzr/table_with_form.html'
     
 class ProdPlanTable(tables.Table):
   date = tables.Column(verbose_name = 'Дата')
@@ -215,13 +216,10 @@ class ProdPlanTable(tables.Table):
     
 class ProductionTable(tables.Table):
   cost_item = tables.Column(verbose_name = 'Комплектующие')
-  value = tables.Column(verbose_name = 'Стоимость')
+  value = EditableColumn('value', verbose_name = 'Стоимость')
   
   summary = ['Итого затрат', 0]
   balance = ['Прибыль', 0]
-  
-  def render_value(self, value):
-    return '%0.2f' % value
   
   def set_summary(self, value):
     self.summary[1] = value

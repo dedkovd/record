@@ -128,7 +128,7 @@ def visit_view(request):
                                                'additional_info': add_info,
                                                'title': title,
                                                'dateform': form,
-                                               'order_form': order_form
+                                               'model_form': order_form
                                                })
 
 @login_required 

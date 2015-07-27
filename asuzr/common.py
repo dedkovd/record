@@ -15,9 +15,8 @@ class custom_date(date):
     return self.day_colors[self.weekday()]
   
  @property
- def date_dd_mm_yy(self):
-    return self.strftime('%d/%m/%Y')
-
- @property
  def is_weekend(self):
     return self.weekday() >= 5
+
+ def __format__(self):
+    return self.strftime('%d.%m.%Y')
