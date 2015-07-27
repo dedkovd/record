@@ -6,7 +6,11 @@ from django.contrib.auth.models import User
 from datetime import date, timedelta
 from django.utils import dateformat
 from django.contrib.auth.signals import user_logged_in, user_logged_out, user_login_failed
-from django.contrib.admin.models import LogEntry
+from django.db.models.signals import post_save, post_delete
+from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
+from django.contrib.contenttypes.models import ContentType
+from django.dispatch import receiver
+from gadjo.requestprovider.signals import get_request
 
 #Изделия
 class Product(models.Model):
@@ -188,3 +192,35 @@ on_login_error = lambda **kwargs: auth_log(u'Ошибка входа польз�
 user_logged_in.connect(on_login)
 user_logged_out.connect(on_logout)
 user_login_failed.connect(on_login_error)
+
+def construct_log_entry(**kwargs):
+    instance = kwargs['instance']
+    content_type = ContentType.objects.get_for_model(instance)
+    user = User.objects.get(username = get_request().META['USER'])
+    log_entry = {}
+    log_entry['user'] = user
+    log_entry['object_repr'] = str(instance)
+    log_entry['content_type'] = content_type 
+    log_entry['object_id'] = instance.id
+    return log_entry
+
+@receiver(post_save)
+def after_save(*args, **kwargs):
+    instance = kwargs['instance']
+    if isinstance(instance, LogEntry): return
+    log_entry = construct_log_entry(**kwargs)
+    created = kwargs['created']
+    log_entry['action_flag'] = ADDITION if created else CHANGE
+    entry = LogEntry(**log_entry)
+    entry.save()
+
+@receiver(post_delete)
+def after_delete(*args, **kwargs):
+    log_entry = construct_log_entry(**kwargs)
+    log_entry['action_flag'] = DELETION
+    entry = LogEntry(**log_entry)
+    entry.save() 
+
+@receiver(post_delete, sender=Sketch)
+def sketch_delete(sender, instance, **kwargs):
+    instance.sketch_file.delete(False)
