@@ -214,11 +214,10 @@ def sketches(request, order_id):
         instance.save()
       return redirect(sketches, order_id = order_id)
 
-  table = SketchesTable(Sketch.objects.filter(order = curr_order))
-  RequestConfig(request).configure(table)
+  sketch_list = Sketch.objects.filter(order = curr_order)
   return render(request, 'asuzr/sketches.html', { 
                                                  'order_id': order_id, 
-                                                 'table': table, 
+                                                 'sketch_list': sketch_list, 
                                                  'title': u'Эскизы заказа %s' % curr_order})
 
 def add_order(request):
