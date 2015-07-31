@@ -9,7 +9,7 @@ from datetime import datetime, date, timedelta
 from django.utils import dateformat
 import calendar
 from django.db.models import Count, Sum
-from asuzr.common import custom_date
+from asuzr.common import *
 from django.contrib.auth.decorators import login_required
 from asuzr.tables import *
 from asuzr.forms import *
@@ -108,6 +108,7 @@ def create_attendance_if_need(date):
   if created:
       attendance.save()
 
+@log_view_call
 @login_required
 def visit_view(request):
   curr_date = datetime.strptime(request.GET.get('date', date.today().strftime('%d.%m.%Y')), '%d.%m.%Y')
@@ -197,6 +198,7 @@ def main(request, day, month, year):
     })
   return HttpResponse(t.render(c))
 
+@log_view_call
 @login_required
 def sketches(request, order_id):
   curr_order = Order.objects.get(pk = order_id)
@@ -208,11 +210,11 @@ def sketches(request, order_id):
         instance.save()
       return redirect(sketches, order_id = order_id)
 
-  sketch_list = Sketch.objects.filter(order = curr_order)
-  #RequestConfig(request).configure(table)
+  table = SketchesTable(Sketch.objects.filter(order = curr_order))
+  RequestConfig(request).configure(table)
   return render(request, 'asuzr/sketches.html', { 
                                                  'order_id': order_id, 
-                                                 'sketch_list': sketch_list, 
+                                                 'table': table, 
                                                  'title': u'Эскизы заказа %s' % curr_order})
 
 def delete_sketch(request):
@@ -222,6 +224,7 @@ def delete_sketch(request):
   sketch.delete()
   return redirect(sketches, order_id = order_id)
 
+@log_view_call
 @login_required 
 def orders(request, archive):
   is_archive = (archive == '1')
@@ -231,6 +234,7 @@ def orders(request, archive):
   RequestConfig(request).configure(table)
   return render(request, 'asuzr/table.html', {'table': table, 'title': title})
 
+@log_view_call
 @login_required 
 def desreport(request):
   start_date = request.GET.get('sdate', date.today().strftime('%d.%m.%Y'))
@@ -244,20 +248,21 @@ def desreport(request):
   RequestConfig(request).configure(table)
   return render(request, 'asuzr/table.html', {'table': table, 'title': title, 'form': form})
 
+@log_view_call
 @login_required
 def production_table(request, order_id):
-  order_costs = OrderCosts.objects.filter(order=order_id)
-  table = ProductionTable(order_costs)
-  curr_order = Order.objects.get(pk = order_id)
-  title = u'Производственная таблица'  
-  table.verbose_name  = u'Заказ: %s' % (', '.join((curr_order.product.name, curr_order.address)))
-  table.verbose_name2 = u'Стоимость: %s' % str(curr_order.price)
-  costs_sum = order_costs.aggregate(Sum('value'))
-  table.set_summary(costs_sum['value__sum'] or 0)
-  table.set_balance(curr_order.price - (costs_sum['value__sum'] or 0))
-  RequestConfig(request).configure(table)
-  return render(request, 'asuzr/table.html', {'table': table, 'title': title})
+  order_list = Order.objects.filter(is_done=False).order_by('-id')
+  sel_order = Order.objects.filter(id=order_id)
+  cost_items = sel_order.values('cost_items')
+  t=loader.get_template('asuzr/order_costs.html')
+  c=RequestContext(request,{
+    'order_list' : order_list,
+    'sel_order' : sel_order,
+    'cost_items' : cost_items,
+    })
+  return HttpResponse(t.render(c))
 
+@log_view_call
 @login_required
 def prod_plan_view(request):
   curr_date = datetime.strptime(request.GET.get('date', date.today().strftime('%d.%m.%Y')), '%d.%m.%Y')
