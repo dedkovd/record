@@ -1,19 +1,43 @@
 {% extends "asuzr/base.html" %}
 {% load thumbnail %}
+{% load staticfiles %}
 {% block page %}
 <style>
   #list li{
       list-style-type: none; /* Прячем исходные маркеры */
+      display: inline; /* Отображать как строчный элемент */
+      margin-right: 10px; /* Отступ слева */
+      padding: 5px; /* Поля вокруг текста */
   }
+  #sketch {
+      width: 200px;
+      margin: 0px;
+  }
+  #sketch li {
+      position: relative;
+  }
+  .sketch_img { 
+      display: inline-block;
+      width: 200px;
+      height: 200px;
+      z-index: 1;  
+  } 
+
+  .del_icon { 
+      display: inline-block;
+      z-index: 2;
+      margin-left: -30px;
+      width: 20px;
+      height: 20px;
+  } 
 </style>
  {% if sketch_list %}
  <ul id = "list">
   {% for sketch in sketch_list %} 
-    <li>  {% thumbnail sketch.sketch_file "200x200" crop="center" as im %} <a href = {{sketch.sketch_file.url}}> <img src = "{{ im.url }}"> </a>{% endthumbnail %} </li>
+    <li id="sketch"> {% thumbnail sketch.sketch_file "200x200" crop="center" as im %} <a class = "sketch_img" href = {{sketch.sketch_file.url}}> <img src = "{{ im.url }}"/> </a>{% endthumbnail %} <a class = "del_icon" title = "Удалить" href= "{% url 'asuzr-del-sketch' %}?pk={{sketch.id}}"><img  src = "{% static "del.png" %}"/></a></li>
   {% endfor %}
  </ul>
  {% endif %}
-{% endblock %}
 
 {% block additional %}
 <div class="inline">
@@ -24,4 +48,5 @@
   <input type="submit" text="Добавить эскиз">
 </form>
 </div>
+{% endblock %}
 {% endblock %}

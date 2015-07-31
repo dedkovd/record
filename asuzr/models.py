@@ -112,6 +112,13 @@ class Order(models.Model):
     
     return need_color
   
+  def save(self, *args, **kwargs):
+    super(Order, self).save(*args, **kwargs)
+    cost_items = CostItem.objects.filter(default_item = True)
+    for ci in cost_items:
+      new_order_cost = OrderCosts(order = self, cost_item = ci, value = 0, formula = '')
+      new_order_cost.save()
+    
 #Эскизы
 class Sketch(models.Model):
   def get_sketch_path(self, file_name):

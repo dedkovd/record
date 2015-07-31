@@ -109,3 +109,4 @@ from django.utils.safestring import mark_safe
 
 INPLACEEDIT_EDIT_EMPTY_VALUE = mark_safe(u'<div class="gray">Редактировать</div>')
 ADAPTOR_INPLACEEDIT_EDIT = 'inplaceeditform.perms.AdminDjangoPermEditInline'
+

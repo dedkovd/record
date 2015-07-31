@@ -16,11 +16,12 @@ urlpatterns = patterns('',
     url(r'^product/(?P<prod_id>\d+)/$', 'asuzr.views.prod_detail'),
     url(r'^main/?(?P<day>\d+)?/?(?P<month>\d+)?/?(?P<year>\d+)?/$', 'asuzr.views.main', name='asuzr-main'),
     url(r'^visits/$', 'asuzr.views.visit_view'),
+    url(r'^order/add/$', 'asuzr.views.add_order', name = 'add-order'),
     url(r'^orders/(?P<archive>\d+)/$', 'asuzr.views.orders',name='asuzr-orders'),
     url(r'^desreport/$', 'asuzr.views.desreport'),
     url(r'^production_table/(?P<order_id>\d+)/$', 'asuzr.views.production_table'),
     url(r'^sketches/(?P<order_id>\d+)/$', 'asuzr.views.sketches'),
-    url(r'^sketches/delete/$', 'asuzr.views.delete_sketch'),
+    url(r'^sketches/delete/$', 'asuzr.views.delete_sketch', name = 'asuzr-del-sketch'),
     url(r'^prodplan/$', 'asuzr.views.prod_plan_view'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^log/$', 'asuzr.views.log_view'),
@@ -34,4 +35,5 @@ if settings.DEBUG:
     # static files (images, css, javascript, etc.)
     urlpatterns += patterns('',
         (r'^media/(?P<path>.*)$', 'django.views.static.serve', {
-        'document_root': settings.MEDIA_ROOT}))
+        'document_root': settings.MEDIA_ROOT})) 
+

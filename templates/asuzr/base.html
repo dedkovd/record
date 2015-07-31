@@ -37,6 +37,13 @@
     .gray {
       color: lightgray;
     }
+    #dateform {
+      margin-left: 12px;
+      margin-top: 6px;
+    }
+    body {
+      background: #F5F5F5
+    }
  </style>
 </head>
 <body>
@@ -65,9 +72,9 @@
 
 
 {% block controls %}
-{% if form %}
-<form method="get">
-    {{ form }}
+{% if dateform %}
+<form  id='dateform' method="get">
+    {{ dateform }}
     <input type="submit" value="OK" />
 </form>
 {% endif %}
