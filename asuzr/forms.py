@@ -6,11 +6,15 @@ from django.contrib.admin.widgets import AdminDateWidget
 from asuzr.models import Order
 
 class DateForm (forms.Form):
-  date = forms.DateField(widget = AdminDateWidget, label = u'Дата', initial = date.today)
+  date = forms.DateField(widget = AdminDateWidget(format='%d.%m.%Y'), 
+          label = u'Дата', 
+          initial = date.today)
   
 class DiapDateForm (forms.Form):
-  sdate = forms.DateField(widget = AdminDateWidget, label = u'С', initial = date.today)
-  edate = forms.DateField(widget = AdminDateWidget, label = u'по', initial = date.today)
+  sdate = forms.DateField(widget = AdminDateWidget(format='%d.%m.%Y'),
+          label = u'С', initial = date.today)
+  edate = forms.DateField(widget = AdminDateWidget(format='%d.%m.%Y'), 
+          label = u'по', initial = date.today)
 
 class OrderForm(ModelForm):
   class Meta:
