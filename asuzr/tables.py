@@ -229,7 +229,7 @@ class ProductionTable(tables.Table):
   
   class Meta:
     attrs = {'class': 'paleblue'}
-    template = 'asuzr/totals_table.html'
+    template = 'asuzr/table_with_form.html'
 
 class LogTable(tables.Table):
   def render_action_flag(self, value):
