@@ -7,11 +7,12 @@ from datetime import date, timedelta
 from django.utils import dateformat
 from django.contrib.auth.signals import user_logged_in, user_logged_out, user_login_failed
 from django.contrib.sessions.models import Session
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import pre_save, post_save, post_delete
 from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
 from django.contrib.contenttypes.models import ContentType
 from django.dispatch import receiver
 from gadjo.requestprovider.signals import get_request
+
 
 #Изделия
 class Product(models.Model):
@@ -113,11 +114,13 @@ class Order(models.Model):
     
     return need_color
   
-  def save(self, *args, **kwargs):
-    super(Order, self).save(*args, **kwargs)
+@receiver(post_save, sender = Order)
+def add_default_cost_items(sender, instance, *args, **kwargs):
+  order_cost_items = instance.cost_items.all()
+  if len(order_cost_items)==0:
     cost_items = CostItem.objects.filter(default_item = True)
     for ci in cost_items:
-      new_order_cost = OrderCosts(order = self, cost_item = ci, value = 0, formula = '')
+      new_order_cost = OrderCosts(order = instance, cost_item = ci, value = 0, formula = '')
       new_order_cost.save()
     
 #Эскизы
