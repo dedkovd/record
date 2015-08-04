@@ -236,7 +236,8 @@ class LogTable(tables.Table):
     return {1: 'Добавление', 
             2: 'Изменение', 
             3: 'Удаление',
-            4: 'Авторизация'}[value]
+            4: 'Авторизация',
+            5: 'Открытие страницы',}[value]
 
   class Meta:
     model = LogEntry

@@ -9,7 +9,7 @@ from datetime import datetime, date, timedelta
 from django.utils import dateformat
 import calendar
 from django.db.models import Count, Sum
-from asuzr.common import custom_date
+from asuzr.common import *
 from django.contrib.auth.decorators import login_required
 from asuzr.tables import *
 from asuzr.forms import *
@@ -108,6 +108,7 @@ def create_attendance_if_need(date):
   if created:
       attendance.save()
 
+@log_view_call
 @login_required
 def visit_view(request):
   curr_date = datetime.strptime(request.GET.get('date', date.today().strftime('%d.%m.%Y')), '%d.%m.%Y')
@@ -202,6 +203,7 @@ def main(request, day, month, year):
     })
   return HttpResponse(t.render(c))
 
+@log_view_call
 @login_required
 def sketches(request, order_id):
   curr_order = Order.objects.get(pk = order_id)
@@ -232,6 +234,7 @@ def delete_sketch(request):
   sketch.delete()
   return redirect(sketches, order_id = order_id)
 
+@log_view_call
 @login_required 
 def orders(request, archive):
   is_archive = (archive == '1')
@@ -241,6 +244,7 @@ def orders(request, archive):
   RequestConfig(request).configure(table)
   return render(request, 'asuzr/table.html', {'table': table, 'title': title})
 
+@log_view_call
 @login_required 
 def desreport(request):
   start_date = request.GET.get('sdate', date.today().strftime('%d.%m.%Y'))
@@ -254,6 +258,7 @@ def desreport(request):
   RequestConfig(request).configure(table)
   return render(request, 'asuzr/table.html', {'table': table, 'title': title, 'dateform': form})
 
+@log_view_call
 @login_required
 def production_table(request, order_id):
   order_costs = OrderCosts.objects.filter(order=order_id)
@@ -279,7 +284,7 @@ def production_table_add_item(request, order_id):
   form.save()
   return redirect(production_table, order_id = order_id)
 
-
+@log_view_call
 @login_required
 def prod_plan_view(request):
   curr_date = datetime.strptime(request.GET.get('date', date.today().strftime('%d.%m.%Y')), '%d.%m.%Y')

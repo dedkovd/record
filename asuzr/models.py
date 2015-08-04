@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from datetime import date, timedelta
 from django.utils import dateformat
 from django.contrib.auth.signals import user_logged_in, user_logged_out, user_login_failed
+from django.contrib.sessions.models import Session
 from django.db.models.signals import post_save, post_delete
 from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
 from django.contrib.contenttypes.models import ContentType
@@ -208,6 +209,7 @@ def construct_log_entry(**kwargs):
 def after_save(*args, **kwargs):
     instance = kwargs['instance']
     if isinstance(instance, LogEntry): return
+    if isinstance(instance, Session): return
     log_entry = construct_log_entry(**kwargs)
     created = kwargs['created']
     log_entry['action_flag'] = ADDITION if created else CHANGE
@@ -216,6 +218,8 @@ def after_save(*args, **kwargs):
 
 #@receiver(post_delete)
 def after_delete(*args, **kwargs):
+    instance = kwargs['instance']
+    if isinstance(instance, Session): return
     log_entry = construct_log_entry(**kwargs)
     log_entry['action_flag'] = DELETION
     entry = LogEntry(**log_entry)
