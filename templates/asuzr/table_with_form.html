@@ -2,6 +2,7 @@
 {% load django_tables2 %}
 {% load i18n %}
 {% block table.tbody %}
+	   
     <tbody>
         {% for row in table.page.object_list|default:table.rows %} {# support pagination #}
         {% block table.tbody.row %}
@@ -18,21 +19,19 @@
         {% endblock table.tbody.empty_text %}
         {% endif %}
         {% endfor %}
-        {% if model_form %}
-        <form action="{% url 'add-order' %}" method="POST" >
+        {% if add_form %}
+        {% if params %}
+        <form action="{% url form_action params %}" method="POST" >
+        {% else %}
+        <form action="{% url form_action %}" method="POST" >
+        {% endif %}
 	  {% csrf_token %}
 	  <tr>
-	    <td>{{model_form.product}}</td>
-	    <td>{{model_form.price}}</td>
-	    <td>{{model_form.paid}}</td>
-	    <td>{{model_form.address}}</td>
-	    <td></td>
-	    <td>{{model_form.deadline}}</td>
-	    <td>{{model_form.delivery}}</td>
-	    <td>{{model_form.lifting}}</td>
+	  {% for field in add_form %}
+	    <td>{{field}}</td>
+	  {% endfor %}  
 	  </tr>
 	  <tr>
-	    <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
 	    <td><input type="submit" text="Добавить заказ"></td>
 	  </tr>
 	</form>

@@ -10,6 +10,7 @@ from asuzr.models import Attendance
 from asuzr.models import Schedule
 from asuzr.models import OrderCosts
 from asuzr.models import CostItem
+from asuzr.forms import *
 
 
 # Register your models here.

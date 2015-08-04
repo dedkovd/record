@@ -120,7 +120,7 @@ def visit_view(request):
   orders_table = get_day_orders_table(curr_date, 'orders-')
   RequestConfig(request).configure(orders_table)
   
-  order_form = OrderForm()
+  order_form = OrderForm(initial = {'designer': request.user})
 
   title = u'Таблица посещаемости на %s' % dateformat.format(curr_date, 'F Y')
   return render(request, 'asuzr/table2.html', {
@@ -129,7 +129,8 @@ def visit_view(request):
                                                'additional_info': add_info,
                                                'title': title,
                                                'dateform': form,
-                                               'model_form': order_form
+                                               'add_form': order_form,
+                                               'form_action': 'add-order'
                                                })
 
 @login_required 
@@ -221,7 +222,7 @@ def sketches(request, order_id):
                                                  'title': u'Эскизы заказа %s' % curr_order})
 
 def add_order(request):
-  new_order = Order(date=date.today(), designer = request.user)
+  new_order = Order(date=date.today())
   form = OrderForm(request.POST, instance = new_order)
   form.save()
   return redirect(visit_view)
@@ -260,16 +261,28 @@ def desreport(request):
 @log_view_call
 @login_required
 def production_table(request, order_id):
-  order_list = Order.objects.filter(is_done=False).order_by('-id')
-  sel_order = Order.objects.filter(id=order_id)
-  cost_items = sel_order.values('cost_items')
-  t=loader.get_template('asuzr/order_costs.html')
-  c=RequestContext(request,{
-    'order_list' : order_list,
-    'sel_order' : sel_order,
-    'cost_items' : cost_items,
-    })
-  return HttpResponse(t.render(c))
+  order_costs = OrderCosts.objects.filter(order=order_id)
+  table = ProductionTable(order_costs)
+  curr_order = Order.objects.get(pk = order_id)
+  title = u'Производственная таблица'  
+  table.verbose_name  = u'Заказ: %s' % (', '.join((curr_order.product.name, curr_order.address)))
+  table.verbose_name2 = u'Стоимость: %s' % str(curr_order.price)
+  costs_sum = order_costs.aggregate(Sum('value'))
+  table.set_summary(costs_sum['value__sum'] or 0)
+  table.set_balance(curr_order.price - (costs_sum['value__sum'] or 0))
+  
+  form = ProdTableForm()
+  
+  RequestConfig(request).configure(table)
+  return render(request, 'asuzr/table.html', 
+		{'table': table, 'title': title, 'add_form': form, 'form_action': 'add-cost-items', 'params': order_id})
+
+def production_table_add_item(request, order_id):
+  curr_order = Order.objects.get(pk = order_id)
+  new_item = OrderCosts(order=curr_order)
+  form = ProdTableForm(request.POST, instance = new_item)
+  form.save()
+  return redirect(production_table, order_id = order_id)
 
 @log_view_call
 @login_required
