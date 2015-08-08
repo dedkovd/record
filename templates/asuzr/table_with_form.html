@@ -20,19 +20,19 @@
         {% endif %}
         {% endfor %}
         {% if add_form %}
-        {% if params %}
-        <form action="{% url form_action params %}" method="POST" >
-        {% else %}
-        <form action="{% url form_action %}" method="POST" >
-        {% endif %}
+          {% if params %}
+            <form action="{% url form_action params %}" method="POST" >
+          {% else %}
+            <form action="{% url form_action %}" method="POST" >
+          {% endif %}
 	  {% csrf_token %}
 	  <tr>
-	  {% for field in add_form %}
-	    <td>{{field}}</td>
-	  {% endfor %}  
+	    {% for field in add_form %}
+	      <td>{{field}}</td>
+	    {% endfor %}  
 	  </tr>
 	  <tr>
-	    <td><input type="submit" text="Добавить заказ"></td>
+		  <td class="align-right" colspan="{{ add_form.fields|length }}"><input type="submit" value="{{ add_form.submit_text }}"></td>
 	  </tr>
 	</form>
         {% endif %}

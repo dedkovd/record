@@ -47,7 +47,8 @@ class OrderForm(ModelForm):
   class Meta:
     model = Order
     fields = ['product', 'price', 'paid', 'address', 'designer', 'deadline', 'delivery', 'lifting']
-    
+
+  submit_text = "Добавить заказ"
   product = forms.ModelChoiceField(
 				    required=False,
 				    queryset = Product.objects.all(),
@@ -60,6 +61,7 @@ class ProdTableForm(ModelForm):
     model = OrderCosts
     fields = ['cost_item', 'value']
     
+  submit_text = "Добавить"
   cost_item = forms.ModelChoiceField(
 				    required=False,
 				    queryset = CostItem.objects.all(),
