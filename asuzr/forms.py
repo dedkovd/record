@@ -54,6 +54,7 @@ class OrderForm(ModelForm):
 				    queryset = Product.objects.all(),
 				    widget=RelatedFieldWidgetCanAdd(Product)
 				    )
+  designer = forms.ModelChoiceField(queryset = User.objects.filter(groups__name='designers'))
 
 
 class ProdTableForm(ModelForm):
