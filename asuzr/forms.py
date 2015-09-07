@@ -2,9 +2,8 @@
 from django import forms
 from django.forms import ModelForm
 from datetime import date
-from django.contrib.admin.widgets import AdminDateWidget, FilteredSelectMultiple, RelatedFieldWidgetWrapper
+from django.contrib.admin.widgets import AdminDateWidget
 from django.forms.extras.widgets import Select
-from django.db.models.fields.related import ManyToOneRel
 from asuzr.models import *
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
