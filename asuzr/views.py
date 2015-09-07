@@ -302,9 +302,13 @@ def prod_plan_view(request):
   
   table = ProdPlanTable(week_days.values())
   title = u'Производственный план на %s - %s' % (sdate.strftime('%d.%m.%Y'), edate.strftime('%d.%m.%Y'))
-  form = DateForm({'date':curr_date})
+  date_form = DateForm({'date':curr_date})
+  add_form  = ProdPlanForm()
   RequestConfig(request).configure(table)
-  return render(request, 'asuzr/table.html', {'table': table, 'title': title, 'dateform': form})
+  return render(request, 'asuzr/table.html', {'table': table, 'title': title, 'dateform': date_form, 'add_form': add_form, 'form_action' : 'add-plan-item'})
+
+def prod_plan_add_item(request):
+  return redirect(prod_plan_view)
 
 @login_required
 def log_view(request):

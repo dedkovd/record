@@ -24,12 +24,14 @@ urlpatterns = patterns('',
     url(r'^sketches/(?P<order_id>\d+)/$', 'asuzr.views.sketches'),
     url(r'^sketches/delete/$', 'asuzr.views.delete_sketch', name = 'asuzr-del-sketch'),
     url(r'^prodplan/$', 'asuzr.views.prod_plan_view'),
+    url(r'^prodplan/add_item/$', 'asuzr.views.prod_plan_add_item', name = 'add-plan-item'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^log/$', 'asuzr.views.log_view'),
     url(r'^inplaceeditform/', include('inplaceeditform.urls')),
     url(r'^accounts/login/$',  login),
     url(r'^accounts/logout/$', logout),
     url(r'^jsi18n$', 'django.views.i18n.javascript_catalog', js_info_dict),
+    url(r'^admin/jsi18n', 'django.views.i18n.javascript_catalog'),
 )
 
 if settings.DEBUG:

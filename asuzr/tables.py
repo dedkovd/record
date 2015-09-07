@@ -213,6 +213,7 @@ class ProdPlanTable(tables.Table):
 
   class Meta:
     attrs = {'class': 'paleblue'}
+    template = 'asuzr/table_with_form.html'
     
 class ProductionTable(tables.Table):
   cost_item = tables.Column(verbose_name = 'Комплектующие')

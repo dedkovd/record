@@ -68,3 +68,11 @@ class ProdTableForm(ModelForm):
 				    queryset = CostItem.objects.all(),
 				    widget=RelatedFieldWidgetCanAdd(CostItem)
 				    )
+
+class ProdPlanForm(ModelForm):
+  class Meta:
+    model = ProdPlan
+    fields = ['start_date', 'order', 'executor','action']
+  
+  submit_text = "Добавить"
+  start_date = forms.DateField(widget = AdminDateWidget(format = '%d.%m.%Y'))

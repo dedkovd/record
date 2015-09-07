@@ -24,6 +24,11 @@
 	      return false;
 	      }
   </script>
+  {% if dateform %}
+    <script type="text/javascript" src="/admin/jsi18n/"></script>
+    <script type="text/javascript" src="/static/admin/js/core.js"></script>
+    {{ dateform.media }}
+  {% endif %}
   <style>
     #menu {
       margin: 0; /* Обнуляем значение отступов */
