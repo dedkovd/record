@@ -205,9 +205,7 @@ class DayOrdersTable(OrdersTable):
     template = 'asuzr/table_with_form.html'
     
 class ProdPlanTable(tables.Table):
-  date = tables.Column(verbose_name = 'Дата')
-  week_day = tables.Column(verbose_name = 'День недели', accessor = 'date.weekday_name')
-  executor = EditableColumn('executor', 'prodplan',verbose_name = 'Исполнитель')
+  executor = EditableColumn('executor', 'prodplan', verbose_name = 'Исполнитель')
   order = EditableColumn('order', 'prodplan', verbose_name = 'Заказ')
   action = EditableColumn('action', 'prodplan', verbose_name = 'Действие')
 

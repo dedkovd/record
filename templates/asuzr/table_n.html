@@ -1,0 +1,10 @@
+{% extends "asuzr/base.html" %}
+{% load inplace_edit %}
+{% load render_table from django_tables2 %}
+
+{% block page %}
+  {%for table in tables %}
+    <div class="inline"><div><h3>{{ table.verbose_name }}</h3></div>{% render_table table %}</div>
+  {% endfor %}
+{% endblock %}
+

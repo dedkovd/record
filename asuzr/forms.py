@@ -71,7 +71,6 @@ class ProdTableForm(ModelForm):
 class ProdPlanForm(ModelForm):
   class Meta:
     model = ProdPlan
-    fields = ['start_date', 'order', 'executor','action']
+    fields = ['executor','order' ,'action']
   
   submit_text = "Добавить"
-  start_date = forms.DateField(widget = AdminDateWidget(format = '%d.%m.%Y'))
