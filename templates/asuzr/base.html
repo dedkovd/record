@@ -8,6 +8,9 @@
   {% inplace_static %}
   <link rel="stylesheet" href="{{ STATIC_URL }}django_tables2/themes/paleblue/css/screen.css" />
   <link rel="stylesheet" href="{{ STATIC_URL }}admin/css/base.css" />
+  <script src="{{ request.ADMIN_MEDIA_PREFIX }}js/core.js" type="text/javascript"></script>
+  <link href="{{ request.ADMIN_MEDIA_PREFIX }}css/widgets.css" rel="stylesheet" type="text/css" media="all" />
+  <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.init.js"></script>
   <script type="text/javascript" src="/static/admin/js/admin/RelatedObjectLookups.js">
 
 	  function showAddAnotherPopup(triggeringLink) {
@@ -97,8 +100,9 @@
 
 {% block controls %}
 {% if dateform %}
+<script type="text/javascript">window.__admin_media_prefix__ = "{{ request.ADMIN_MEDIA_PREFIX }}";</script>
 <form  id='dateform' method="get">
-    {{ dateform }}
+	{{ dateform }}
     <input type="submit" value="OK" />
 </form>
 {% endif %}

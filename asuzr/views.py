@@ -14,6 +14,7 @@ from django.contrib.auth.decorators import login_required
 from asuzr.tables import *
 from asuzr.forms import *
 from django_tables2 import RequestConfig
+from inplaceeditform.commons import get_admin_static_url
 
 @login_required 
 def prod_list(request):
@@ -122,6 +123,8 @@ def visit_view(request):
   
   order_form = OrderForm(initial = {'designer': request.user})
 
+  request.ADMIN_MEDIA_PREFIX = get_admin_static_url()
+
   title = u'Таблица посещаемости на %s' % dateformat.format(curr_date, 'F Y')
   return render(request, 'asuzr/table2.html', {
                                                'table1': attendance_table, 
@@ -187,6 +190,7 @@ def desreport(request):
   title = u'Отчет по дизайнерам за '+' - '.join((start_date, end_date))
   form = DiapDateForm({'sdate': sdate, 'edate': edate})
   RequestConfig(request).configure(table)
+  request.ADMIN_MEDIA_PREFIX = get_admin_static_url()
   return render(request, 'asuzr/table.html', {'table': table, 'title': title, 'dateform': form})
 
 @log_view_call
@@ -238,6 +242,7 @@ def prod_plan_view(request):
   title = u'Производственный план на %s - %s' % (sdate.strftime('%d.%m.%Y'), edate.strftime('%d.%m.%Y'))
   date_form = DateForm({'date':curr_date})
   add_form  = ProdPlanForm()
+  request.ADMIN_MEDIA_PREFIX = get_admin_static_url()
   for table in tables:
     RequestConfig(request).configure(table)
   return render(request, 'asuzr/table_n.html', {'tables': tables, 'title': title, 'dateform': date_form, 'add_form': add_form, 'form_action' : 'add-plan-item'})
