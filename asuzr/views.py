@@ -158,7 +158,8 @@ def sketches(request, order_id):
 def add_order(request):
   new_order = Order(date=date.today())
   form = OrderForm(request.POST, instance = new_order)
-  form.save()
+  if form.is_valid():
+      form.save()
   return redirect(visit_view)
 
 def delete_sketch(request):
