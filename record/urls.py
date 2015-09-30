@@ -8,7 +8,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 js_info_dict = {
-    'packages': ('django.conf',),
+    'packages': ('django.contrib.admin',),
 }
 
 urlpatterns = patterns('',
@@ -30,7 +30,6 @@ urlpatterns = patterns('',
     url(r'^accounts/login/$',  login),
     url(r'^accounts/logout/$', logout),
     url(r'^jsi18n$', 'django.views.i18n.javascript_catalog', js_info_dict),
-    url(r'^admin/jsi18n', 'django.views.i18n.javascript_catalog'),
 )
 
 if settings.DEBUG:
