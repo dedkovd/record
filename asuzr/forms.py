@@ -53,8 +53,8 @@ class OrderForm(ModelForm):
 				    queryset = Product.objects.all(),
 				    widget=RelatedFieldWidgetCanAdd(Product)
 				    )
-  designer = forms.ModelChoiceField(queryset = User.objects.filter(groups__name='designers'))
-
+  designer = forms.ModelChoiceField(queryset = User.objects.filter(groups__name='Дизайнеры'))
+  deadline = forms.DateField(widget = AdminDateWidget(format='%d.%m.%Y'))
 
 class ProdTableForm(ModelForm):
   class Meta:
