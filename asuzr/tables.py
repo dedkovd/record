@@ -69,7 +69,6 @@ class ThumbnailColumn(tables.TemplateColumn):
 class OrdersTable(tables.Table):
   date = tables.DateColumn('d.m.Y', verbose_name = 'Дата')
   deadline = tables.DateColumn('d.m.Y', verbose_name = 'Срок сдачи')
-  #product = tables.LinkColumn('asuzr.views.production_table', verbose_name = 'Наименование', args=[tables.utils.A('pk')]) 
   product = StaffLinkColumn(view = 'asuzr.views.production_table', verbose_name = 'Наименование') 
   delivery = EditableColumn('delivery', verbose_name = 'Доставка')
   lifting = EditableColumn('lifting', verbose_name = 'Подъем')
