@@ -177,6 +177,7 @@ def orders(request, archive):
   table = Table(Order.objects.filter(is_done = is_archive))
   title = u'Архивная таблица заказов' if is_archive else u'Таблица выхода заказов'
   RequestConfig(request).configure(table)
+  request.ADMIN_MEDIA_PREFIX = get_admin_static_url()
   return render(request, 'asuzr/table.html', {'table': table, 'title': title})
 
 @log_view_call
