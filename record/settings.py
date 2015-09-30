@@ -84,7 +84,11 @@ USE_TZ = True
 
 DATE_FORMAT = 'd.m.Y'
 
+DATETIME_FORMAT = 'd.m.Y H:i:s'
+
 DATE_INPUT_FORMATS = ('%d.%m.%Y',)
+
+DATETIME_INPUT_FORMATS = ('%d.%m.%Y %H:%M:%S',)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
