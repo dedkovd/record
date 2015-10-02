@@ -208,7 +208,7 @@ def construct_log_entry(**kwargs):
     log_entry['object_id'] = instance.id
     return log_entry
 
-#@receiver(post_save)
+@receiver(post_save)
 def after_save(*args, **kwargs):
     instance = kwargs['instance']
     if isinstance(instance, LogEntry): return
@@ -219,7 +219,7 @@ def after_save(*args, **kwargs):
     entry = LogEntry(**log_entry)
     entry.save()
 
-#@receiver(post_delete)
+@receiver(post_delete)
 def after_delete(*args, **kwargs):
     instance = kwargs['instance']
     if isinstance(instance, Session): return
