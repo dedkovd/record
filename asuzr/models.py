@@ -200,7 +200,7 @@ user_login_failed.connect(on_login_error)
 def construct_log_entry(**kwargs):
     instance = kwargs['instance']
     content_type = ContentType.objects.get_for_model(instance)
-    user = User.objects.get(username = get_request().user
+    user = get_request().user
     log_entry = {}
     log_entry['user'] = user
     log_entry['object_repr'] = str(instance)
