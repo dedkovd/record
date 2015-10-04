@@ -90,6 +90,8 @@ DATE_INPUT_FORMATS = ('%d.%m.%Y',)
 
 DATETIME_INPUT_FORMATS = ('%d.%m.%Y %H:%M:%S',)
 
+FIRST_DAY_OF_WEEK = 1
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
