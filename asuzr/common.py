@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*- 
 from datetime import date
 from django.contrib.admin.models import LogEntry
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 
 class custom_date(date):
 
@@ -27,6 +27,9 @@ def log_view_call(fn):
     def wrapper(*args, **kwargs):
         log_entry = {}
         request = args[0]
+        if not request.user.is_authenticated():
+            return fn(*args, **kwargs)
+
         log_entry['user'] = request.user
         log_entry['object_repr'] = fn.__name__
         log_entry['action_flag'] = 5
