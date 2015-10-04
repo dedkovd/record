@@ -27,7 +27,7 @@ def log_view_call(fn):
     def wrapper(*args, **kwargs):
         log_entry = {}
         request = args[0]
-        log_entry['user'] = User.objects.get(username = request.META['USER'])
+        log_entry['user'] = request.user
         log_entry['object_repr'] = fn.__name__
         log_entry['action_flag'] = 5
         entry = LogEntry(**log_entry)
