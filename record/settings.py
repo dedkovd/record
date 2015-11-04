@@ -99,7 +99,7 @@ STATIC_URL = '/static/'
 
 ADMIN_MEDIA_PREFIX = '/static/admin/'
 
-TEMPLATE_DIRS = ('templates/')
+TEMPLATE_DIRS = ('templates/',)
 
 TEMPLATE_CONTEXT_PROCESSORS += ('django.core.context_processors.request',
                                 'django.core.context_processors.csrf',
