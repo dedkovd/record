@@ -206,7 +206,7 @@ def construct_log_entry(**kwargs):
     log_entry['user'] = user
     log_entry['object_repr'] = str(instance)
     log_entry['content_type'] = content_type 
-    log_entry['object_id'] = instance.id
+    log_entry['object_id'] = instance.id if hasattr(instance, 'id') else -1
     return log_entry
 
 @receiver(post_save)
