@@ -12,8 +12,6 @@ from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
 from django.contrib.contenttypes.models import ContentType
 from django.dispatch import receiver
 from gadjo.requestprovider.signals import get_request
-from sorl.thumbnail.kvstores.cached_db_kvstore import KVStore
-
 
 #Изделия
 class Product(models.Model):
@@ -214,8 +212,8 @@ def after_save(*args, **kwargs):
     instance = kwargs['instance']
     if isinstance(instance, LogEntry): return
     if isinstance(instance, Session): return
-    if isinstance(instance, KVStore): return
     log_entry = construct_log_entry(**kwargs)
+    if log_entry['object_id'] == -1: return
     created = kwargs['created']
     log_entry['action_flag'] = ADDITION if created else CHANGE
     entry = LogEntry(**log_entry)
