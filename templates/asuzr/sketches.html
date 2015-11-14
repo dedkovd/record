@@ -34,7 +34,13 @@
  {% if sketch_list %}
  <ul id = "list">
   {% for sketch in sketch_list %} 
-    <li id="sketch"> {% thumbnail sketch.sketch_file "200x200" crop="center" as im %} <a class = "sketch_img" href = {{sketch.sketch_file.url}}> <img src = "{{ im.url }}"/> </a>{% endthumbnail %} <a class = "del_icon" title = "Удалить" href= "{% url 'asuzr-del-sketch' %}?pk={{sketch.id}}"><img  src = "{% static "del.png" %}"/></a></li>
+    <li id="sketch"> 
+    {% thumbnail sketch.sketch_file "200x200" crop="center" as im %} 
+    	<a class = "sketch_img" href = {{sketch.sketch_file.url}}>
+	    <img src = "{{ im.url }}"/>
+	</a>
+    {% endthumbnail %} 
+    <a class = "del_icon" title = "Удалить" href= "{% url 'asuzr-del-sketch' %}?pk={{sketch.id}}"><img  src = "{% static "del.png" %}"/></a></li>
   {% endfor %}
  </ul>
  {% endif %}
